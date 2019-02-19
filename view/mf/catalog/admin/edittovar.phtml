@@ -1,0 +1,59 @@
+<?php
+use Admin\Lib\Ioline;
+?>
+<h2>Новый товар</h2>
+<div id="catalog">
+  <ul>
+    <li><a href="#base">Основная информация</a></li>
+    <li><a href="#anons">Анонс</a></li>
+    <li><a href="#detal">Подробно</a></li>
+      <li><a href="#category">Разделы</a></li>
+      <?php
+      if ($this->torg){
+          ?>
+      <li><a href="#torg">Торговые предложения</a></li>
+      <?php
+
+      } else {
+          ?>
+      <li><a href="#sklad">Торговый каталог</a></li>
+      <?php
+      }
+          ?>
+  </ul>
+  <div id="base"><h3>Основная информация</h3>
+      <form method="post" action="<?=$this->url("admin_tovar",["action"=>"save"])?>">
+        <input type="hidden" name="data_type" value="base">
+      <?php
+      $io_line_interface=new Ioline($this->container,$this);
+      $io_line_interface->create_interface("create_catalog_tovar_base", false);
+      $io_line_interface->print_interface();
+
+      ?>
+</form>
+  </div>
+  <div id="anons">
+
+    </div>
+  <div id="detal">
+  </div>
+    
+  <div id="category">
+  </div>
+  
+    <div id="sklad">
+  </div>
+    <div id="torg">
+  </div>
+    <input type="button" class="ui-button ui-widget ui-corner-all" name="save" value="Сохранить">
+    <input type="button" class="ui-button ui-widget ui-corner-all" name="del" value="Отменить">
+    <input type="button" class="ui-button ui-widget ui-corner-all" name="saveadd" value="+ Сохранить и добавить новый" style="margin-left: 4rem; background-color: blue; color:white">
+</div>
+
+
+
+
+ 
+<?php $this->inlineScript()->captureStart(); ?>
+$("#catalog").tabs();
+<?php $this->inlineScript()->captureEnd(); ?>
