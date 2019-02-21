@@ -17,6 +17,7 @@ Simba::$connection->BeginTrans();
 
     if (!empty($infa) && is_array($infa)){
         foreach ($infa as $tc){
+            if (empty($tc)){continue;}
                 simba::replaceRecord (array(
                 'catalog_tovar'=>(int)$id,
                 'catalog_category'=>(int)$tc
