@@ -20,9 +20,8 @@ $action=$this->url("admin_tovar",["action"=>"save"],[
         ],
     ]);
 ?>
-<h2><?=($this->new) ? "Новый товар": "Редактирование товара"?></h2>
+
 <div id="output"></div>
-<br> 
 <form method="post" action="<?=$action?>"  enctype="multipart/form-data">
 <div id="catalog">
   <ul>
@@ -91,6 +90,7 @@ $action=$this->url("admin_tovar",["action"=>"save"],[
 $(document).ready(function() {
     $("#catalog").tabs();
     $("#cancel_btn").on("click",function(){window.parent.f56_close(); })
+    window.top.win_f56.dialog("option","title","<?=($this->new) ? "Новый товар": "Редактирование товара"?>");
 });
 <?php $this->inlineScript()->captureEnd(); ?>
 
