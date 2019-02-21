@@ -1,7 +1,29 @@
 <?php
 use Admin\Lib\Ioline;
+$options=[];
+ if ($this->new){
+  $options["create_new_zap_flag"]=true;
+ }
+
+//выделим идентифатор строки из параметра name -он всегда есть
+$id=0;
+if(isset($_POST["name"]) && $_SERVER['REQUEST_METHOD']=="POST"){
+    $id=array_keys($_POST["name"]);
+    $id=$id[0];
+} else {
+    $id=unserialize(base64_decode($_GET['get_interface_input']));
+}
+
+$action=$this->url("admin_tovar",["action"=>"save"],[
+        'query' => [
+            'get_interface_input' => base64_encode(serialize($id)),
+        ],
+    ]);
 ?>
-<h2>Новый товар</h2>
+<h2><?=($this->new) ? "Новый товар": "Редактирование товара"?></h2>
+<div id="output"></div>
+<br> 
+<form method="post" action="<?=$action?>"  enctype="multipart/form-data">
 <div id="catalog">
   <ul>
     <li><a href="#base">Основная информация</a></li>
@@ -22,38 +44,53 @@ use Admin\Lib\Ioline;
           ?>
   </ul>
   <div id="base"><h3>Основная информация</h3>
-      <form method="post" action="<?=$this->url("admin_tovar",["action"=>"save"])?>">
-        <input type="hidden" name="data_type" value="base">
+      
       <?php
       $io_line_interface=new Ioline($this->container,$this);
-      $io_line_interface->create_interface("create_catalog_tovar_base", false);
+      $io_line_interface->create_interface("create_catalog_tovar_base", false,null,$options);
       $io_line_interface->print_interface();
-
       ?>
-</form>
   </div>
   <div id="anons">
 
+      <?php
+      $io_line_interface1=new Ioline($this->container,$this);
+      $io_line_interface1->create_interface("create_catalog_tovar_anons", false,null,$options);
+      $io_line_interface1->print_interface();
+      ?>
+
     </div>
   <div id="detal">
+      <?php
+      $io_line_interface1=new Ioline($this->container,$this);
+      $io_line_interface1->create_interface("create_catalog_tovar_detal", false,null,$options);
+      $io_line_interface1->print_interface();
+      ?>
   </div>
     
   <div id="category">
+      <?php
+      $io_line_interface1=new Ioline($this->container,$this);
+      $io_line_interface1->create_interface("create_catalog_tovar_category", false,null,$options);
+      $io_line_interface1->print_interface();
+      ?>
   </div>
   
     <div id="sklad">
   </div>
     <div id="torg">
   </div>
-    <input type="button" class="ui-button ui-widget ui-corner-all" name="save" value="Сохранить">
-    <input type="button" class="ui-button ui-widget ui-corner-all" name="del" value="Отменить">
-    <input type="button" class="ui-button ui-widget ui-corner-all" name="saveadd" value="+ Сохранить и добавить новый" style="margin-left: 4rem; background-color: blue; color:white">
+    <input type="submit" class="ui-button ui-widget ui-corner-all save_btn" name="save[<?=$id?>]" value="Сохранить">
+    <input type="button" class="ui-button ui-widget ui-corner-all" id="cancel_btn" value="Закрыть без сохранения">
+    <input type="submit" class="ui-button ui-widget ui-corner-all" name="saveadd[<?=$id?>]" value="+ Сохранить и добавить новый" style="margin-left: 4rem; background-color: blue; color:white">
 </div>
+</form>
 
 
-
-
- 
 <?php $this->inlineScript()->captureStart(); ?>
-$("#catalog").tabs();
+$(document).ready(function() {
+    $("#catalog").tabs();
+    $("#cancel_btn").on("click",function(){window.parent.f56_close(); })
+});
 <?php $this->inlineScript()->captureEnd(); ?>
+
