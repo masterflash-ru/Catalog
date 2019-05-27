@@ -41,5 +41,29 @@ return [
             __DIR__ . '/../view',
         ],
     ],
+    
+    /*доступ к панели управления*/
+    "permission"=>[
+        "objects" =>[
+            "interface/catalog_tovar" => [1,1,0760],
+        ],
+    ],
 
+    /*сетка для админки*/
+    "interface"=>[
+        "catalog_tovar"=>__DIR__."/admin.catalog_tovar.php",   //список всех товаров
+        "tovar_detal"=>__DIR__."/admin.tovar_detal.php",        //табы для редактирвоания товара
+    ],
+    /*плагины для сетки JqGrid*/
+    "JqGridPlugin"=>[
+        'factories' => [
+        ],
+    ],
+    /*плагины для Zform*/
+    "ZformPlugin"=>[
+        'factories' => [
+        ],
+        'aliases' =>[
+        ],
+    ],
 ];
