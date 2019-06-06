@@ -62,8 +62,11 @@ return [
 
     /*сетка для админки*/
     "interface"=>[
-        "catalog_tovar"=>__DIR__."/admin.catalog_tovar.php",   //список всех товаров
-        "tovar_detal"=>__DIR__."/admin.tovar_detal.php",        //табы для редактирвоания товара
+        "catalog_tovar"=>__DIR__."/admin.catalog_tovar.php",        //список всех товаров
+        "tovar_detal"=>__DIR__."/admin.tovar_detal.php",            //табы для редактирвоания товара
+        "tovar_detal_base"=>__DIR__."/admin.tovar_detal_base.php",  //базовая информация
+        "tovar_detal_anons"=>__DIR__."/admin.tovar_detal_anons.php",
+        "tovar_detal_detal"=>__DIR__."/admin.tovar_detal_detal.php",
     ],
     /*плагины для сетки JqGrid*/
     "JqGridPlugin"=>[

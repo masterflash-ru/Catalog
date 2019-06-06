@@ -11,20 +11,16 @@ return [
             "container" => "tovar_detal",
             "tabs"=>[
                 [
-                    "label"=>"Товар",
-                    "interface"=>"catalog_tovar"
+                    "label"=>"Основная информация",
+                    "interface"=>"tovar_detal_base"
                 ],
                 [
                     "label"=>"Анонс",
-                    "interface"=>"users_profile"
+                    "interface"=>"tovar_detal_anons"
                 ],
                 [
-                    "label"=>"Подробно",
-                    "interface"=>"users_profile"
-                ],
-                [
-                    "label"=>"Разделы",
-                    "interface"=>"users_profile"
+                    "label"=>"Подробное описание",
+                    "interface"=>"tovar_detal_detal"
                 ],
 
             ],

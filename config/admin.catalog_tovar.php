@@ -114,31 +114,15 @@ return [
 
                 
                 "colModel" => [
-                    ColModelHelper::text("id",["label"=>"ID","width"=>80,"editable"=>false]),
-                    ColModelHelper::text("name",["label"=>"Название товара","editable"=>false]),
+                    ColModelHelper::text("id",["label"=>"ID","width"=>80]),
+                    ColModelHelper::text("name",["label"=>"Название товара","width"=>300]),
                     ColModelHelper::text("url",["label"=>"URL карточки",
-                        "width"=>200,
-                        "hidden"=>true,
-                        "editrules"=>[
-                            "edithidden"=>true,
-                        ],
-                        "plugins"=>[
-                            "edit"=>[
-                                "translit"=>[
-                                    "source"=>"name"
-                                ],
-                            ],
-                            "add"=>[
-                                "translit"=>[
-                                    "source"=>"name"
-                                ],
-                            ],
-                        ],
-                       "editable"=>false,
+                        "width"=>250,
+                       
                     ]),
                     ColModelHelper::text("poz",["label"=>"Порядок","width"=>70,"editable"=>false]),
                     ColModelHelper::checkbox("public",["label"=>"Публ.","width"=>50]),
-                    ColModelHelper::interfaces("id",
+                    /*ColModelHelper::interfaces("id",
                                          [
                                              "label"=>"Редактировать",
                                              "width"=>160,
@@ -164,7 +148,7 @@ return [
                                                  ],
                                              ]
                                          ]),
-
+*/
                     
                     ColModelHelper::jscellActions("myaction",["formatoptions"=>["onEdit"=>"editTovar"]]),
                 ],
