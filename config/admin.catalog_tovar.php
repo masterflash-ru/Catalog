@@ -71,14 +71,14 @@ return [
                 "toppager" => true,
                 "rownumbers" => false,
                 "navgrid" => [
-                    "button" => NavGridHelper::Button(["search"=>false,"edit"=>false,"add"=>false]),
+                    "button" => NavGridHelper::Button(["search"=>false,"edit"=>false,"add"=>false,"del"=>false]),
                     //"editOptions"=>NavGridHelper::editOptions(),
                    // "addOptions"=>NavGridHelper::addOptions(),
-                    "delOptions"=>NavGridHelper::delOptions(),
+                    //"delOptions"=>NavGridHelper::delOptions(),
                 ],
                 //дополнительные кнопки в панель сетки
                 "navButtonAdd"=>[
-                    NavGridHelper::ButtonAdd(["caption"=>"Заголовок","title"=>"Добавить товар","onClickButton"=>new Expr('eee')]),
+                    NavGridHelper::ButtonAdd(["caption"=>"Заголовок","title"=>"Добавить товар","onClickButton"=>new Expr('newTovar')]),
                     NavGridHelper::ButtonAdd(["caption"=>"Заголовок1","title"=>"Добавить товар1"]),
                 ],
                 
@@ -95,7 +95,7 @@ return [
                                     "label"=>"Новый товар"
                                 ],
                                 "attributes"=>[
-                                    "onclick"=>"eee()",
+                                    "onclick"=>"newTovar()",
                                     "class"=>"btn btn-primary btn-sm",
                                 ]
                             ]),
@@ -104,7 +104,7 @@ return [
                                     "label"=>"Новый товар с характеристиками"
                                 ],
                                 "attributes"=>[
-                                    "onclick"=>"eee()",
+                                    "onclick"=>"newTovar()",
                                     "class"=>"btn btn-secondary btn-sm",
                                 ]
                             ]),
@@ -115,7 +115,7 @@ return [
                 
                 "colModel" => [
                     ColModelHelper::text("id",["label"=>"ID","width"=>80,"editable"=>false]),
-                    ColModelHelper::text("name",["label"=>"Название товара","width"=>300,"editoptions" => ["size"=>120 ]]),
+                    ColModelHelper::text("name",["label"=>"Название товара","editable"=>false]),
                     ColModelHelper::text("url",["label"=>"URL карточки",
                         "width"=>200,
                         "hidden"=>true,
@@ -134,9 +134,9 @@ return [
                                 ],
                             ],
                         ],
-                       "editoptions" => ["size"=>120 ],
+                       "editable"=>false,
                     ]),
-                    ColModelHelper::text("poz",["label"=>"Порядок","width"=>70,"editoptions" => ["size"=>50 ]]),
+                    ColModelHelper::text("poz",["label"=>"Порядок","width"=>70,"editable"=>false]),
                     ColModelHelper::checkbox("public",["label"=>"Публ.","width"=>50]),
                     ColModelHelper::interfaces("id",
                                          [
@@ -166,7 +166,7 @@ return [
                                          ]),
 
                     
-                    ColModelHelper::cellActions(),
+                    ColModelHelper::jscellActions("myaction",["formatoptions"=>["onEdit"=>"editTovar"]]),
                 ],
             ],
         ],
