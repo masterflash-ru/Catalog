@@ -77,10 +77,10 @@ return [
                     //"delOptions"=>NavGridHelper::delOptions(),
                 ],
                 //дополнительные кнопки в панель сетки
-                "navButtonAdd"=>[
+               /* "navButtonAdd"=>[
                     NavGridHelper::ButtonAdd(["caption"=>"Заголовок","title"=>"Добавить товар","onClickButton"=>new Expr('newTovar')]),
                     NavGridHelper::ButtonAdd(["caption"=>"Заголовок1","title"=>"Добавить товар1"]),
-                ],
+                ],*/
                 
                 //"colMenu"  =>  true ,
                 /*область перед телом сетки, toolbar
@@ -90,7 +90,7 @@ return [
                 "toolbarModel"=>[
                     "rowModel" => [
                         'elements' => [
-                            RowModelHelper::button("newTovar",[
+                            RowModelHelper::button("new_Tovar",[
                                 'options'=>[
                                     "label"=>"Новый товар"
                                 ],
@@ -99,7 +99,7 @@ return [
                                     "class"=>"btn btn-primary btn-sm",
                                 ]
                             ]),
-                            RowModelHelper::button("newTovar1",[
+                            RowModelHelper::button("new_Tovar1",[
                                 'options'=>[
                                     "label"=>"Новый товар с характеристиками"
                                 ],
