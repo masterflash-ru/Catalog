@@ -3,6 +3,7 @@ namespace Mf\Catalog;
 
 use Admin\Service\JqGrid\ColModelHelper;
 use Admin\Service\JqGrid\NavGridHelper;
+use Admin\Service\Zform\RowModelHelper;
 use Zend\Json\Expr;
 
 
@@ -70,11 +71,48 @@ return [
                 "toppager" => true,
                 "rownumbers" => false,
                 "navgrid" => [
-                    "button" => NavGridHelper::Button(["search"=>false]),
-                    "editOptions"=>NavGridHelper::editOptions(),
-                    "addOptions"=>NavGridHelper::addOptions(),
+                    "button" => NavGridHelper::Button(["search"=>false,"edit"=>false,"add"=>false]),
+                    //"editOptions"=>NavGridHelper::editOptions(),
+                   // "addOptions"=>NavGridHelper::addOptions(),
                     "delOptions"=>NavGridHelper::delOptions(),
                 ],
+                //дополнительные кнопки в панель сетки
+                "navButtonAdd"=>[
+                    NavGridHelper::ButtonAdd(["caption"=>"Заголовок","title"=>"Добавить товар","onClickButton"=>new Expr('eee')]),
+                    NavGridHelper::ButtonAdd(["caption"=>"Заголовок1","title"=>"Добавить товар1"]),
+                ],
+                
+                //"colMenu"  =>  true ,
+                /*область перед телом сетки, toolbar
+                * все настройки как в Zform
+                */
+                "toolbar"=> [true,"top"],
+                "toolbarModel"=>[
+                    "rowModel" => [
+                        'elements' => [
+                            RowModelHelper::button("newTovar",[
+                                'options'=>[
+                                    "label"=>"Новый товар"
+                                ],
+                                "attributes"=>[
+                                    "onclick"=>"eee()",
+                                    "class"=>"btn btn-primary btn-sm",
+                                ]
+                            ]),
+                            RowModelHelper::button("newTovar1",[
+                                'options'=>[
+                                    "label"=>"Новый товар с характеристиками"
+                                ],
+                                "attributes"=>[
+                                    "onclick"=>"eee()",
+                                    "class"=>"btn btn-secondary btn-sm",
+                                ]
+                            ]),
+                        ],
+                    ],
+                ],
+
+                
                 "colModel" => [
                     ColModelHelper::text("id",["label"=>"ID","width"=>80,"editable"=>false]),
                     ColModelHelper::text("name",["label"=>"Название товара","width"=>300,"editoptions" => ["size"=>120 ]]),

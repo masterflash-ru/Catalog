@@ -41,7 +41,18 @@ return [
             __DIR__ . '/../view',
         ],
     ],
-    
+    'view_helper_config' => [
+        'asset' => [
+            'resource_map' => [
+                'backend'=>[
+                    'js'=>[
+                        100=>"js/admin/catalog.js?".date("d.Y"),
+                    ],
+                ],
+            ],
+        ],
+    ],
+
     /*доступ к панели управления*/
     "permission"=>[
         "objects" =>[
