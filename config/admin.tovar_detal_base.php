@@ -54,7 +54,6 @@ return [
                                     ],
                                 ],
                             ],
-
                         ]),
                         RowModelHelper::text("poz",['options'=>["label"=>"Сортировка"]]),
                         RowModelHelper::checkbox("public",['options'=>["label"=>"Публиковать"]]),
@@ -64,6 +63,15 @@ return [
                         ]),
                         //это ID товара
                         RowModelHelper::hidden("id"),
+                    ],
+                    'input_filter' => [
+                        "name" => [
+                            'required' => true,
+                            'filters' => [
+                                [ 'name' => 'StringTrim' ],
+                                [ 'name' => 'StripTags' ],
+                            ],
+                        ],
                     ],
 
                 ],
