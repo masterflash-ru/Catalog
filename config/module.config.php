@@ -4,6 +4,44 @@ namespace Mf\Catalog;
 use Zend\Router\Http\Literal;
 use Zend\Router\Http\Segment;
 
+/*адаптеры ресайза*/
+use Mf\Imglib\Filter\Adapter\Gd;
+use Mf\Imglib\Filter\Adapter\Consoleimagick  as ImgAdapter;
+use Mf\Imglib\Filter\Adapter\Imagick;
+
+/** 
+* адаптеры (фильтры) ресайза, оптимизации и наложения водных знаков на фото
+* это обертка к выбранному адаптеру, см. выше
+*/
+use Mf\Imglib\Filter\ImgResize;
+use Mf\Imglib\Filter\ImgOptimize;
+use Mf\Imglib\Filter\Watermark;
+/*
+как обрабатывать фото определяют эти константы:
+IMG_METHOD_SCALE_WH_CROP //точное вырезание
+IMG_METHOD_SCALE_FIT_W   //точно по горизонатали, вертикаль пропорционально
+IMG_METHOD_SCALE_FIT_H   //точно к вертикали, горизонталь пропорционально
+IMG_METHOD_CROP"         //просто вырезать из исходного часть
+
+IMG_ALIGN_CENTER         //выравнивать по центру
+IMG_ALIGN_LEFT          //выравнивать по левой части
+IMG_ALIGN_RIGHT         //выравнивать по правой
+IMG_ALIGN_TOP            //выравнивать по верху
+IMG_ALIGN_BOTTOM        //выравнивать по низу
+*/
+/**
+* специальный фильтр для генерации альтернативных форматов изображений
+*/
+use Mf\Imglib\Filter\ImgAlternative;
+
+
+/*фильтр копировщик файлов в хранилище*/
+use Mf\Storage\Filter\CopyToStorage;
+
+use Zend\Validator\File\IsImage;
+use Zend\Validator\File\ImageSize;
+
+
 
 return [
 	//маршруты
@@ -80,4 +118,45 @@ return [
         'aliases' =>[
         ],
     ],
+
+/*хранилище и обработка (ресайз) фото и других файлов*/
+    "storage"=>[
+        /* Эти настройки должгы быть в конфиге вашего приложения
+        'data_folder'=>"data/datastorage",
+        'file_storage'=>[
+            'default'=>[
+                'base_url'=>"media/pics/",
+            ],
+        ],*/
+
+        //базовые настройки хранения фото товара
+        //укажите одноименные настройки в вашем приложении для изменения
+        'items'=>[
+            "catalog_tovar_detal"=>[
+                "description"=>"Фото товара в карточке",
+                'file_storage'=>'default',
+                'file_rules'=>[
+                            'admin_img'=>[
+                                'filters'=>[
+                                        CopyToStorage::class => [
+                                                    'folder_level'=>0,
+                                                    'folder_name_size'=>3,
+                                                    'strategy_new_name'=>'md5'
+                                        ],
+                                ],
+                            ],
+                            'anons'=>[
+                                'filters'=>[
+                                        CopyToStorage::class => [
+                                                    'folder_level'=>0,
+                                                    'folder_name_size'=>3,
+                                                    'strategy_new_name'=>'md5'
+                                        ],
+                                ],
+                            ],
+                ],
+            ],//catalog_tovar_detal
+        ],
+    ],
+
 ];

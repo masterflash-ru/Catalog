@@ -3,7 +3,6 @@ namespace Mf\Catalog;
 
 use Admin\Service\Zform\RowModelHelper;
 
-
 return [
 
         "type" => "izform",

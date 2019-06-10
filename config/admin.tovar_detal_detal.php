@@ -3,6 +3,8 @@ namespace Mf\Catalog;
 
 use Admin\Service\Zform\RowModelHelper;
 
+
+
 return [
 
         "type" => "izform",
@@ -37,8 +39,8 @@ return [
                 "rowModel" => [
                     'elements' => [
                         RowModelHelper::ckeditor("info",['options'=>["label"=>"Подробное описание"]]),
-                        RowModelHelper::image("img",['options'=>["label"=>"Фото товара"]]),
-                        RowModelHelper::image("file",['options'=>["label"=>"Новое фото товара"]]),
+                        //RowModelHelper::image("img",['options'=>["label"=>"Фото товара"]]),
+                        RowModelHelper::file("img",['options'=>["label"=>"Новое фото товара"]]),
 
                         RowModelHelper::submit("submit",[
                             'attributes'=>['value' => 'Записать'],
