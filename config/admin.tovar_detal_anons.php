@@ -3,6 +3,8 @@ namespace Mf\Catalog;
 
 use Admin\Service\Zform\RowModelHelper;
 
+use Zend\Validator;
+use Zend\Filter;
 
 return [
 
@@ -40,16 +42,23 @@ return [
                         RowModelHelper::uploadimage("img",
                                               [
                                                   'options'=>["label"=>"Фото товара"],
-                                                  /*"plugins"=>[
+                                                  "plugins"=>[
                                                       "read"=>[
                                                           "Images" =>[
                                                               "storage_item_name" => "catalog_tovar_anons", //имя секции в хранилище
                                                               "storage_item_rule_name"=>"admin_img"         //имя правила из хранилища
                                                           ],
                                                       ],
-                                                  ],*/
+                                                      "edit"=>[
+                                                          "Images"=>[
+                                                              "storage_item_name" => "catalog_tovar_anons",              //имя секции в хранилище
+                                                              "image_id"=>"id"
+                                                          ],
+                                                      ],
+
+                                                  ],
                                               ]),
-                        //RowModelHelper::file("id",['options'=>["label"=>"Новое фото товара"]]),
+
 
                         //RowModelHelper::ckeditor("anons",['options'=>["label"=>"Анонс"]]),
 
@@ -59,7 +68,25 @@ return [
                         //это ID товара
                         RowModelHelper::hidden("id"),
                     ],
-
+                    /*конфигурация фильтров и валидаторов*/
+                    'input_filter' => [
+                        "img" => [
+                            'required' => false,
+                            'filters' => [
+                                [ 'name' => Filter\File\RenameUpload::class,
+                                    'options'=>[
+                                        'target'    => './data/datastorage',
+                                        'use_upload_name' => true,
+                                        'overwrite' => true
+                                    ]
+                                ],
+                            ],
+                            'validators' => [
+                                [ 'name' => Validator\File\UploadFile::class ],
+                                [ 'name' => Validator\File\IsImage::class ],
+                            ],
+                        ],
+                    ],//input_filter
                 ],
             ],
         ],
