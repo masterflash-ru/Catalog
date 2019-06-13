@@ -60,7 +60,7 @@ return [
                                               ]),
 
 
-                        //RowModelHelper::ckeditor("anons",['options'=>["label"=>"Анонс"]]),
+                        RowModelHelper::ckeditor("anons",['options'=>["label"=>"Анонс"]]),
 
                         RowModelHelper::submit("submit",[
                             'attributes'=>['value' => 'Записать'],

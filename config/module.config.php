@@ -62,7 +62,7 @@ return [
 	 
     'service_manager' => [
         'factories' => [//сервисы-фабрики
-            Service\Admin::class => Service\Factory\AdminFactory::class,
+            
         ],
     ],
 
@@ -71,7 +71,6 @@ return [
         'factories' => [
             Controller\AdminController::class => Controller\Factory\AdminControllerFactory::class,
         ],
-    	
 	],
     
     'view_manager' => [
@@ -105,10 +104,14 @@ return [
         "tovar_detal_base"=>__DIR__."/admin.tovar_detal_base.php",  //базовая информация
         "tovar_detal_anons"=>__DIR__."/admin.tovar_detal_anons.php",
         "tovar_detal_detal"=>__DIR__."/admin.tovar_detal_detal.php",
+        "tovar_catalog_category"=>__DIR__."/admin.catalog_category.php",
     ],
     /*плагины для сетки JqGrid*/
     "JqGridPlugin"=>[
         'factories' => [
+            Service\Admin\JqGrid\Plugin\CatalogTranslit::class => Service\Admin\JqGrid\Plugin\Factory\CatalogTranslit::class,
+        ],
+        'aliases' =>[
         ],
     ],
     /*плагины для Zform*/
@@ -132,6 +135,30 @@ return [
         //базовые настройки хранения фото товара
         //укажите одноименные настройки в вашем приложении для изменения
         'items'=>[
+            "catalog_tovar_anons"=>[
+                "description"=>"Фото товара в списке",
+                'file_storage'=>'default',
+                'file_rules'=>[
+                            'admin_img'=>[
+                                'filters'=>[
+                                        CopyToStorage::class => [
+                                                    'folder_level'=>0,
+                                                    'folder_name_size'=>3,
+                                                    'strategy_new_name'=>'md5'
+                                        ],
+                                ],
+                            ],
+                            'anons'=>[
+                                'filters'=>[
+                                        CopyToStorage::class => [
+                                                    'folder_level'=>0,
+                                                    'folder_name_size'=>3,
+                                                    'strategy_new_name'=>'md5'
+                                        ],
+                                ],
+                            ],
+                ],
+            ],//catalog_tovar_anons
             "catalog_tovar_detal"=>[
                 "description"=>"Фото товара в карточке",
                 'file_storage'=>'default',
