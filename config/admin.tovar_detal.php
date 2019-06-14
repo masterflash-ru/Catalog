@@ -22,6 +22,10 @@ return [
                     "label"=>"Подробное описание",
                     "interface"=>"tovar_detal_detal"
                 ],
+                [
+                    "label"=>"Категории товара",
+                    "interface"=>"tovar_detal_category"
+                ],
 
             ],
 

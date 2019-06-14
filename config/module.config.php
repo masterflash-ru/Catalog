@@ -105,6 +105,7 @@ return [
         "tovar_detal_anons"=>__DIR__."/admin.tovar_detal_anons.php",
         "tovar_detal_detal"=>__DIR__."/admin.tovar_detal_detal.php",
         "tovar_catalog_category"=>__DIR__."/admin.catalog_category.php",
+        "tovar_detal_category"=>__DIR__."/admin.tovar_detal_category.php",
     ],
     /*плагины для сетки JqGrid*/
     "JqGridPlugin"=>[
@@ -117,6 +118,8 @@ return [
     /*плагины для Zform*/
     "ZformPlugin"=>[
         'factories' => [
+            Service\Admin\JqGrid\Plugin\GetCategoryTree::class => Service\Admin\JqGrid\Plugin\Factory\GetCategoryTree::class,
+            Service\Admin\JqGrid\Plugin\SaveCategory2tovar::class => Service\Admin\JqGrid\Plugin\Factory\SaveCategory2tovar::class,
         ],
         'aliases' =>[
         ],
