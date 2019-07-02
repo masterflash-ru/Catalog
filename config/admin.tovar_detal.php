@@ -26,6 +26,10 @@ return [
                     "label"=>"Категории товара",
                     "interface"=>"tovar_detal_category"
                 ],
+                [
+                    "label"=>"Торговый каталог",
+                    "interface"=>"tovar_torg_catalog"
+                ],
 
             ],
 

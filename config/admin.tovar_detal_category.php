@@ -39,7 +39,7 @@ return [
                 "rowModel" => [
                     'elements' => [
                         RowModelHelper::select("category",[
-                            'attributes'=>['multiple' => true],
+                            'attributes'=>['multiple' => true,"size"=>25],
                             'options'=>[
                                 "label"=>"Категории товара:"
                             ],

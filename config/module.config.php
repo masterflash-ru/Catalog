@@ -99,13 +99,16 @@ return [
 
     /*сетка для админки*/
     "interface"=>[
-        "catalog_tovar"=>__DIR__."/admin.catalog_tovar.php",        //список всех товаров
-        "tovar_detal"=>__DIR__."/admin.tovar_detal.php",            //табы для редактирвоания товара
-        "tovar_detal_base"=>__DIR__."/admin.tovar_detal_base.php",  //базовая информация
-        "tovar_detal_anons"=>__DIR__."/admin.tovar_detal_anons.php",
-        "tovar_detal_detal"=>__DIR__."/admin.tovar_detal_detal.php",
-        "tovar_catalog_category"=>__DIR__."/admin.catalog_category.php",
-        "tovar_detal_category"=>__DIR__."/admin.tovar_detal_category.php",
+        "catalog_tovar"=>__DIR__."/admin.catalog_tovar.php",                //список всех товаров
+        "tovar_detal"=>__DIR__."/admin.tovar_detal.php",                    //табы для редактирвоания товара
+        "tovar_detal_base"=>__DIR__."/admin.tovar_detal_base.php",          //базовая информация
+        "tovar_detal_anons"=>__DIR__."/admin.tovar_detal_anons.php",        //подробно товар - анонс
+        "tovar_detal_detal"=>__DIR__."/admin.tovar_detal_detal.php",        //подробно товар - подр. описание
+        "tovar_catalog_category"=>__DIR__."/admin.catalog_category.php",    //категории товара
+        "tovar_detal_category"=>__DIR__."/admin.tovar_detal_category.php",  //подробно товар - категории
+        "tovar_torg_catalog"=>__DIR__."/admin.tovar_torg_catalog.php",      //торговый каталог (табы)
+        "tovar_torg_money"=>__DIR__."/admin.tovar_torg_money.php",          //цена  в торговом каталоге
+        
     ],
     /*плагины для сетки JqGrid*/
     "JqGridPlugin"=>[
