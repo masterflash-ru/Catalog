@@ -99,6 +99,10 @@ return [
 
     /*сетка для админки*/
     "interface"=>[
+        "catalog_store"=>__DIR__."/admin.catalog_store.php",                //склады
+        "catalog_properties"=>__DIR__."/admin.catalog_properties.php",      //общие параметры товара
+        "catalog_properties_list"=>__DIR__."/admin.catalog_properties_list.php",      //общие параметры списки
+        
         "catalog_tovar"=>__DIR__."/admin.catalog_tovar.php",                //список всех товаров
         "tovar_detal"=>__DIR__."/admin.tovar_detal.php",                    //табы для редактирвоания товара
         "tovar_detal_base"=>__DIR__."/admin.tovar_detal_base.php",          //базовая информация
@@ -108,6 +112,7 @@ return [
         "tovar_detal_category"=>__DIR__."/admin.tovar_detal_category.php",  //подробно товар - категории
         "tovar_torg_catalog"=>__DIR__."/admin.tovar_torg_catalog.php",      //торговый каталог (табы)
         "tovar_torg_money"=>__DIR__."/admin.tovar_torg_money.php",          //цена  в торговом каталоге
+        
         
     ],
     /*плагины для сетки JqGrid*/

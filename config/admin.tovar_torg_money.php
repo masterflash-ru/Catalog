@@ -16,13 +16,18 @@ return [
             
             /*все что касается чтения в таблицу*/
             "read"=>[
+                "db1"=>[//если записи нет, тогда вставим пустую
+                    "sql"=>"insert into catalog_tovar_currency (catalog_tovar)
+                       select id from catalog_tovar where id=:id 
+                        and NOT EXISTS (select catalog_tovar from catalog_tovar_currency where catalog_tovar=:id)",
+                ],
                 "db"=>[//плагин выборки из базы
                     "sql"=>"select * from catalog_tovar_currency where catalog_tovar=:id",
                 ],
             ],
             "edit"=>[
                 "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar_currency ",  
+                    "sql"=>"select * from catalog_tovar_currency ", 
                 ],
             ],
             
