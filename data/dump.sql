@@ -40,7 +40,7 @@ CREATE TABLE `catalog_category` (
   KEY `url` (`url`),
   KEY `public` (`public`),
   KEY `xml_id` (`xml_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='дерево категорий';
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='дерево категорий';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -172,7 +172,7 @@ CREATE TABLE `catalog_properties` (
   `xml_id` char(127) DEFAULT NULL,
   `type` char(20) DEFAULT NULL COMMENT 'тип:str,voc',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='справочник характеристик товара';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='справочник характеристик товара';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,8 +198,8 @@ CREATE TABLE `catalog_properties_list` (
   `value` char(127) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `catalog_properties` (`catalog_properties`),
-  CONSTRAINT `catalog_properties_list_fk` FOREIGN KEY (`catalog_properties`) REFERENCES `catalog_properties` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='варианты значений характеристик';
+  CONSTRAINT `catalog_properties_list_fk11` FOREIGN KEY (`catalog_properties`) REFERENCES `catalog_properties` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='варианты значений характеристик';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -209,6 +209,58 @@ CREATE TABLE `catalog_properties_list` (
 LOCK TABLES `catalog_properties_list` WRITE;
 /*!40000 ALTER TABLE `catalog_properties_list` DISABLE KEYS */;
 /*!40000 ALTER TABLE `catalog_properties_list` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `catalog_sku_properties`
+--
+
+DROP TABLE IF EXISTS `catalog_sku_properties`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalog_sku_properties` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` char(255) DEFAULT NULL,
+  `xml_id` char(127) DEFAULT NULL,
+  `type` char(20) DEFAULT NULL COMMENT 'тип:str,voc',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='справочник характеристик товара';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `catalog_sku_properties`
+--
+
+LOCK TABLES `catalog_sku_properties` WRITE;
+/*!40000 ALTER TABLE `catalog_sku_properties` DISABLE KEYS */;
+/*!40000 ALTER TABLE `catalog_sku_properties` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `catalog_sku_properties_list`
+--
+
+DROP TABLE IF EXISTS `catalog_sku_properties_list`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalog_sku_properties_list` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `xml_id` char(127) DEFAULT NULL,
+  `catalog_properties` int(11) DEFAULT NULL,
+  `value` char(127) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `catalog_properties` (`catalog_properties`),
+  CONSTRAINT `catalog_properties_list_fk` FOREIGN KEY (`catalog_properties`) REFERENCES `catalog_sku_properties` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='варианты значений характеристик';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `catalog_sku_properties_list`
+--
+
+LOCK TABLES `catalog_sku_properties_list` WRITE;
+/*!40000 ALTER TABLE `catalog_sku_properties_list` DISABLE KEYS */;
+/*!40000 ALTER TABLE `catalog_sku_properties_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -227,7 +279,7 @@ CREATE TABLE `catalog_store` (
   `xml_id` varchar(255) DEFAULT NULL COMMENT 'согласование с 1С',
   `poz` int(11) NOT NULL DEFAULT '100' COMMENT 'порядок',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='склад магазина';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='склад магазина';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -262,7 +314,7 @@ CREATE TABLE `catalog_tovar` (
   UNIQUE KEY `url` (`url`),
   KEY `public` (`public`),
   KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COMMENT='сам товар';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='сам товар';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -282,17 +334,20 @@ DROP TABLE IF EXISTS `catalog_tovar_currency`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `catalog_tovar_currency` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `catalog_tovar` int(11) DEFAULT NULL,
   `catalog_currency` char(3) DEFAULT NULL COMMENT 'код валюты',
   `catalog_tovar_properties` int(11) DEFAULT NULL COMMENT 'ID комбинации хар-к или null',
   `value` decimal(11,2) DEFAULT NULL,
+  `nds` int(11) DEFAULT NULL COMMENT '1-НДС включен в цену',
+  PRIMARY KEY (`id`),
   KEY `catalog_currency` (`catalog_currency`),
   KEY `catalog_tovar` (`catalog_tovar`),
   KEY `catalog_tovar_properties` (`catalog_tovar_properties`),
   CONSTRAINT `catalog_tovar_currency_fk` FOREIGN KEY (`catalog_currency`) REFERENCES `catalog_currency` (`currency`) ON DELETE CASCADE,
   CONSTRAINT `catalog_tovar_currency_fk1` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `catalog_tovar_currency_fk2` FOREIGN KEY (`catalog_tovar_properties`) REFERENCES `catalog_tovar_properties` (`id_combination`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='цены товара';
+  CONSTRAINT `catalog_tovar_currency_fk2` FOREIGN KEY (`catalog_tovar_properties`) REFERENCES `catalog_tovar_sku_properties` (`id_combination`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='цены товара';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -325,7 +380,7 @@ CREATE TABLE `catalog_tovar_gabarits` (
   KEY `catalog_measure_code` (`catalog_measure_code`),
   CONSTRAINT `catalog_tovar_gabarits_fk` FOREIGN KEY (`catalog_measure_code`) REFERENCES `catalog_measure` (`code`) ON DELETE CASCADE,
   CONSTRAINT `catalog_tovar_measure_fk` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `catalog_tovar_measure_fk1` FOREIGN KEY (`catalog_tovar_properties`) REFERENCES `catalog_tovar_properties` (`id_combination`) ON DELETE CASCADE
+  CONSTRAINT `catalog_tovar_measure_fk1` FOREIGN KEY (`catalog_tovar_properties`) REFERENCES `catalog_tovar_sku_properties` (`id_combination`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='мера,вес,габарит';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -346,7 +401,6 @@ DROP TABLE IF EXISTS `catalog_tovar_properties`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `catalog_tovar_properties` (
-  `id_combination` int(11) NOT NULL COMMENT 'номер комбинации хар-тик',
   `catalog_tovar` int(11) DEFAULT NULL,
   `catalog_properties_list` int(11) DEFAULT NULL,
   `catalog_properties` int(11) DEFAULT NULL,
@@ -354,10 +408,9 @@ CREATE TABLE `catalog_tovar_properties` (
   KEY `catalog_tovar` (`catalog_tovar`),
   KEY `catalog_properties_list` (`catalog_properties_list`),
   KEY `catalog_properties` (`catalog_properties`),
-  KEY `id` (`id_combination`),
-  CONSTRAINT `catalog_tovar_properties_fk` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `catalog_tovar_properties_fk1` FOREIGN KEY (`catalog_properties_list`) REFERENCES `catalog_properties_list` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `catalog_tovar_properties_fk2` FOREIGN KEY (`catalog_properties`) REFERENCES `catalog_properties` (`id`) ON DELETE CASCADE
+  CONSTRAINT `catalog_tovar_properties_fk11` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `catalog_tovar_properties_fk12` FOREIGN KEY (`catalog_properties_list`) REFERENCES `catalog_properties_list` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `catalog_tovar_properties_fk3` FOREIGN KEY (`catalog_properties`) REFERENCES `catalog_properties` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='собственно характиристики товара';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -368,6 +421,38 @@ CREATE TABLE `catalog_tovar_properties` (
 LOCK TABLES `catalog_tovar_properties` WRITE;
 /*!40000 ALTER TABLE `catalog_tovar_properties` DISABLE KEYS */;
 /*!40000 ALTER TABLE `catalog_tovar_properties` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `catalog_tovar_sku_properties`
+--
+
+DROP TABLE IF EXISTS `catalog_tovar_sku_properties`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalog_tovar_sku_properties` (
+  `id_combination` int(11) NOT NULL COMMENT 'номер комбинации хар-тик',
+  `catalog_tovar` int(11) DEFAULT NULL,
+  `catalog_properties_list` int(11) DEFAULT NULL,
+  `catalog_properties` int(11) DEFAULT NULL,
+  `value` char(127) DEFAULT NULL,
+  KEY `catalog_tovar` (`catalog_tovar`),
+  KEY `catalog_properties_list` (`catalog_properties_list`),
+  KEY `catalog_properties` (`catalog_properties`),
+  KEY `id` (`id_combination`),
+  CONSTRAINT `catalog_tovar_properties_fk` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `catalog_tovar_properties_fk1` FOREIGN KEY (`catalog_properties_list`) REFERENCES `catalog_sku_properties_list` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `catalog_tovar_properties_fk2` FOREIGN KEY (`catalog_properties`) REFERENCES `catalog_sku_properties` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='собственно характиристики товара';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `catalog_tovar_sku_properties`
+--
+
+LOCK TABLES `catalog_tovar_sku_properties` WRITE;
+/*!40000 ALTER TABLE `catalog_tovar_sku_properties` DISABLE KEYS */;
+/*!40000 ALTER TABLE `catalog_tovar_sku_properties` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -390,7 +475,7 @@ CREATE TABLE `catalog_tovar_store` (
   KEY `catalog_properties` (`catalog_tovar_properties`),
   CONSTRAINT `catalog_tovar_store_fk` FOREIGN KEY (`catalog_store`) REFERENCES `catalog_store` (`id`) ON DELETE CASCADE,
   CONSTRAINT `catalog_tovar_store_fk1` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `catalog_tovar_store_fk2` FOREIGN KEY (`catalog_tovar_properties`) REFERENCES `catalog_tovar_properties` (`id_combination`) ON DELETE CASCADE
+  CONSTRAINT `catalog_tovar_store_fk2` FOREIGN KEY (`catalog_tovar_properties`) REFERENCES `catalog_tovar_sku_properties` (`id_combination`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='склад';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -412,4 +497,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-06-05  9:58:57
+-- Dump completed on 2019-07-16  9:14:28
