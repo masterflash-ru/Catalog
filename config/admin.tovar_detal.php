@@ -15,6 +15,10 @@ return [
                     "interface"=>"tovar_detal_base"
                 ],
                 [
+                    "label"=>"Свойства товара",
+                    "interface"=>"tovar_detal_properties"
+                ],
+                [
                     "label"=>"Анонс",
                     "interface"=>"tovar_detal_anons"
                 ],

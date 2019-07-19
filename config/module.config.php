@@ -106,6 +106,7 @@ return [
         "catalog_tovar"=>__DIR__."/admin.catalog_tovar.php",                //список всех товаров
         "tovar_detal"=>__DIR__."/admin.tovar_detal.php",                    //табы для редактирвоания товара
         "tovar_detal_base"=>__DIR__."/admin.tovar_detal_base.php",          //базовая информация
+        "tovar_detal_properties"=>__DIR__."/admin.tovar_detal_properties.php", //общие св-ва товара
         "tovar_detal_anons"=>__DIR__."/admin.tovar_detal_anons.php",        //подробно товар - анонс
         "tovar_detal_detal"=>__DIR__."/admin.tovar_detal_detal.php",        //подробно товар - подр. описание
         "tovar_catalog_category"=>__DIR__."/admin.catalog_category.php",    //категории товара
@@ -128,6 +129,7 @@ return [
         'factories' => [
             Service\Admin\JqGrid\Plugin\GetCategoryTree::class => Service\Admin\JqGrid\Plugin\Factory\GetCategoryTree::class,
             Service\Admin\JqGrid\Plugin\SaveCategory2tovar::class => Service\Admin\JqGrid\Plugin\Factory\SaveCategory2tovar::class,
+            Service\Admin\Zform\Plugin\GetCatalogProperties::class => Service\Admin\Zform\Plugin\Factory\GetCatalogProperties::class,
         ],
         'aliases' =>[
         ],
