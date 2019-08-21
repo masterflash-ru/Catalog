@@ -129,7 +129,7 @@ return [
         'factories' => [
             Service\Admin\JqGrid\Plugin\GetCategoryTree::class => Service\Admin\JqGrid\Plugin\Factory\GetCategoryTree::class,
             Service\Admin\JqGrid\Plugin\SaveCategory2tovar::class => Service\Admin\JqGrid\Plugin\Factory\SaveCategory2tovar::class,
-            Service\Admin\Zform\Plugin\GetCatalogProperties::class => Service\Admin\Zform\Plugin\Factory\GetCatalogProperties::class,
+            Service\Admin\Zform\Plugin\CatalogProperties::class => Service\Admin\Zform\Plugin\Factory\CatalogProperties::class,
         ],
         'aliases' =>[
         ],

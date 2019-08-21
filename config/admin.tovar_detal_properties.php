@@ -18,14 +18,10 @@ return [
             
             /*все что касается чтения в таблицу*/
             "read"=>[
-                "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar_properties where catalog_tovar=:id",  
-                ],
+                Service\Admin\Zform\Plugin\CatalogProperties::class=>[],
             ],
             "edit"=>[
-                "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar",  
-                ],
+                Service\Admin\Zform\Plugin\CatalogProperties::class=>[],
             ],
             
             /*поведение формы*/
@@ -46,7 +42,7 @@ return [
                             ],
                             "plugins"=>[
                                 "read"=>[
-                                    Service\Admin\Zform\Plugin\GetCatalogProperties::class=>[]
+                                    Service\Admin\Zform\Plugin\CatalogProperties::class=>[]
                                 ]
                             ]
                         ]),
@@ -55,7 +51,7 @@ return [
                             'attributes'=>['value' => 'Записать'],
                         ]),
                         //это ID товара
-                        RowModelHelper::hidden("id"),
+                        //RowModelHelper::hidden("id"),
                     ],
                     /*конфигурация фильтров и валидаторов*/
                     'input_filter' => [

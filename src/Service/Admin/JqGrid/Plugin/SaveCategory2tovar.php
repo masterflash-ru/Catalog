@@ -20,7 +20,7 @@ class SaveCategory2tovar extends AbstractPlugin
     /**
     * собственно запись категорий в связку категории-товар
     */
-    public function edit($postParameters,$getParameters)
+    public function iedit($postParameters,$getParameters)
     {
         $id=(int)$getParameters["id"];
         //удалим что было раньше

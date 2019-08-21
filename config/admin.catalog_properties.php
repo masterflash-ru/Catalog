@@ -79,13 +79,15 @@ return [
                     ColModelHelper::text("name",["label"=>"Имя параметра","width"=>250,"editoptions" => ["size"=>50 ]]),
                     ColModelHelper::select("type",
                                            [
-                                               "label"=>"Тип",
+                                               "label"=>"Тип поля в админке",
                                                "width"=>250,
                                                "editoptions"=>[
                                                    "value"=>[
-                                                       "text"=>"Строка",
+                                                       "text"=>"Однострочный ввод",
+                                                       "textarea"=>"Многострочная поле",
                                                        "select"=>"Выпадающий список",
                                                        "MultiCheckbox"=>"Массив чекбоксов",
+                                                       "Radio"=>"Массив радиокнопок",
                                                    ]
                                                ],
                                            ]),

@@ -7,7 +7,7 @@ use Interop\Container\ContainerInterface;
 
 */
 
-class GetCatalogProperties
+class CatalogProperties
 {
 
 public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
