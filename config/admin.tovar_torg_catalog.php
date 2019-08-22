@@ -15,12 +15,12 @@ return [
                     "interface"=>"tovar_torg_money"
                 ],
                 [
-                    "label"=>"Параметры",
-                    "interface"=>"tovar_detal_anons"
+                    "label"=>"Параметры (габариты)",
+                    "interface"=>"tovar_torg_gabarits"
                 ],
                 [
                     "label"=>"Склады",
-                    "interface"=>"tovar_detal_detal"
+                    "interface"=>"tovar_torg_store"
                 ],
             ],
 

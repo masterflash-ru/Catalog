@@ -9,7 +9,7 @@ return [
         "type" => "izform",
         //"description"=>"",
         "options" => [
-            "container" => "tovar_torg_money",
+            "container" => "tovar_torg_gabarits",
             "podval" =>"",
             "container-attr"=>"style='width:500px'",
         
@@ -17,17 +17,18 @@ return [
             /*все что касается чтения в таблицу*/
             "read"=>[
                 "db1"=>[//если записи нет, тогда вставим пустую
-                    "sql"=>"insert into catalog_tovar_currency (catalog_tovar)
-                       select id from catalog_tovar where id=:id 
-                        and NOT EXISTS (select catalog_tovar from catalog_tovar_currency where catalog_tovar=:id)",
+                    "sql"=>"insert into catalog_tovar_gabarits (catalog_tovar,catalog_measure_code)
+                       select id,(select code from catalog_measure where is_default>0) 
+                        from catalog_tovar where id=:id 
+                            and NOT EXISTS (select catalog_tovar from catalog_tovar_gabarits where catalog_tovar=:id)",
                 ],
                 "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar_currency where catalog_tovar=:id",
+                    "sql"=>"select * from catalog_tovar_gabarits where catalog_tovar=:id",
                 ],
             ],
             "edit"=>[
                 "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar_currency ", 
+                    "sql"=>"select * from catalog_tovar_gabarits", 
                 ],
             ],
             
@@ -38,40 +39,33 @@ return [
 
             /*внешний вид*/
             "layout"=>[
-                "caption" => "Управление ценами",
+                "caption" => "Дополнительные параметры товара",
                 "rowModel" => [
                     'elements' => [
-                        RowModelHelper::select("catalog_currency",[
+                        RowModelHelper::select("catalog_measure_code",[
                             'options'=>[
-                                "label"=>"Валюта базовой цены:"
+                                "label"=>"Единица измерения:"
                             ],
                             "plugins"=>[
                                 "rowModel"=>[//плагин срабатывает при генерации формы до ее вывода
                                     Plugin\SelectFromDb::class=>[
-                                        "sql"=>"select currency as id, currency as name from catalog_currency order by poz"
+                                        "sql"=>"select code as id, measure_title as name from catalog_measure order by is_default desc, name asc"
                                     ],
                                 ],
                             ],
 
                         ]),
 
-                        RowModelHelper::text("value",['options'=>["label"=>"Базовая цена"]]),
-                        RowModelHelper::checkbox("nds",['options'=>["label"=>"НДС включен в цену"]]),
+                        RowModelHelper::text("weight",['options'=>["label"=>"Вес (грамм)"]]),
+                        RowModelHelper::text("length",['options'=>["label"=>"Длина (мм)"]]),
+                        RowModelHelper::text("width",['options'=>["label"=>"Ширина (мм)"]]),
+                        RowModelHelper::text("height",['options'=>["label"=>"Высота (мм)"]]),
+
                         RowModelHelper::submit("submit",[
                             'attributes'=>['value' => 'Записать'],
                         ]),
                         //это ID товара
-                       // RowModelHelper::hidden("catalog_tovar"),
-                        RowModelHelper::hidden("id"),
-                    ],
-                    'input_filter' => [
-                        "value" => [
-                            'required' => false,
-                            'filters' => [
-                                [ 'name' => 'StringTrim' ],
-                                [ 'name' => 'StripTags' ],
-                            ],
-                        ],
+                        RowModelHelper::hidden("catalog_tovar"),
                     ],
 
                 ],

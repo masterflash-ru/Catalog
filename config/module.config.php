@@ -113,13 +113,15 @@ return [
         "tovar_detal_category"=>__DIR__."/admin.tovar_detal_category.php",  //подробно товар - категории
         "tovar_torg_catalog"=>__DIR__."/admin.tovar_torg_catalog.php",      //торговый каталог (табы)
         "tovar_torg_money"=>__DIR__."/admin.tovar_torg_money.php",          //цена  в торговом каталоге
-        
+        "tovar_torg_store"=>__DIR__."/admin.tovar_torg_store.php",          //остатки на складах
+        "tovar_torg_gabarits"=>__DIR__."/admin.tovar_torg_gabarits.php",    //габаритные параметры товара
         
     ],
     /*плагины для сетки JqGrid*/
     "JqGridPlugin"=>[
         'factories' => [
             Service\Admin\JqGrid\Plugin\CatalogTranslit::class => Service\Admin\JqGrid\Plugin\Factory\CatalogTranslit::class,
+            Service\Admin\JqGrid\Plugin\CatalogTovarStore::class => Service\Admin\JqGrid\Plugin\Factory\CatalogTovarStore::class,
         ],
         'aliases' =>[
         ],
