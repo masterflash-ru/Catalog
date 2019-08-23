@@ -6,84 +6,55 @@
 namespace Mf\Catalog\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
-use Admin\Lib\Ioline;
+use Zend\View\Model\JsonModel;
+use ADO\Service\RecordSet;
+use Zend\Session\Container;
 use Exception;
 
 class AdminController extends AbstractActionController
 {
-      protected $adminService;
-    protected $container;
+
+    protected $connection;
 
 
-public function __construct ($adminService,$container)
-{
-    $this->adminService=$adminService;
-    $this->container=$container;//\Zend\Debug\Debug::dump(unserialize(base64_decode($_GET['get_interface_input'])));
-    //unset($_GET["get_interface_input"]);
-}
+    public function __construct($connection)
+    {
+        $this->connection=$connection;
+    }
 
 
-/**
-* создание нового обычного товара - вывод макета
-*/
-public function saveAction()
-{
-    $view= new ViewModel(
-			[
-                "container"=>$this->container,
-                "new"=>true,
-                "torg"=>false
-			]);
-	return $view;
+    /**
+    * создание нового товара
+    * создается специальная пустая запись в каталоге товаров
+    */
+    public function tovarnewAction()
+    {
+        $rez=[];
+        $session=new Container();
+        $session_id=$session->getManager()->getId();
+        
+        $type=$this->params()->fromQuery("type",0);
+        
+        //удалим брошенные новые записи
+        $a=0;
+        $this->connection->Execute("delete from catalog_tovar where new_date and new_date > date_add(now(), interval 1 hour)",$a,adExecuteNoRecords);
+        
+        $rs=new RecordSet();
+        $rs->CursorType =adOpenKeyset;
+        $rs->Open("select * from catalog_tovar where new_date and new_session='{$session_id}'",$this->connection);
+        if ($rs->EOF){
+            $rs->AddNew();
+        }
+        $rs->Fields->Item["new_date"]->Value=date("Y-m-d H:i:s");
+        $rs->Fields->Item["new_session"]->Value=$session_id;
+        $rs->Update();
+        
+        //получим ID новой записи
+        $rez["id"]=$rs->Fields->Item["id"]->Value;
+        $rez["new_session"]=$rs->Fields->Item["new_session"]->Value;
+        
+        
+        return new JsonModel($rez);
+    }
 
-}
-
-/**
-* создание нового обычного товара - вывод макета
-*/
-public function createtovarAction()
-{
-    $view= new ViewModel(
-			[
-                "container"=>$this->container,
-                "new"=>true,
-                "torg"=>false
-			]);
-    $view->setTemplate("mf/catalog/admin/edittovar");
-	return $view;
-
-}
-
-/**
-* создание товара с торговыми предлоежниями - вываод макета
-*/
-public function createtovar1Action()
-{
-    $view= new ViewModel(
-			[
-                "container"=>$this->container,
-                "new"=>true,
-                "torg"=>true
-			]);
-    $view->setTemplate("mf/catalog/admin/edittovar");
-	return $view;
-
-}
-    
-/**
-* редактор товара - вываод макета
-*/
-public function edittovarAction()
-{
-    $view= new ViewModel(
-			[
-                "container"=>$this->container,
-                "torg"=>false
-			]);
-    $view->setTemplate("mf/catalog/admin/edittovar");
-	return $view;
-
-}
-    
 }

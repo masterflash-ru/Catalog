@@ -1,8 +1,17 @@
 "use strict";
 
-function newTovar()
+function newTovar(type)
 {
-    
+    $.get("/adm/admin_catalog/tovar_new",{type:type},function(data, textStatus, jqXHR){
+        if (textStatus=="success"){
+            $.get("/adm/universal-interface/tovar_detal",{id:data.id},function(data, textStatus, jqXHR){
+                if (textStatus=="success"){
+                    $("#dialog_catalog").html(data);
+                    $("#dialog_catalog").dialog("open");
+                } else {alert(textStatus);}
+            });
+        } else {alert(textStatus);}
+    });
 }
 
 
@@ -21,7 +30,6 @@ function editTovar(el)
 
 
 
-
 $(document).ready(function() {
 //добавим диалог-окно
 $("body").append('<div id="dialog_catalog" title="Редактор товара"></div>');
@@ -34,7 +42,7 @@ $("body").append('<div id="dialog_catalog" title="Редактор товара"
         position:{
             my:"left top",
             at:"left top",
-            of:"#contant-container"
+            of:".fixed-top-item"
         },
     });
 });

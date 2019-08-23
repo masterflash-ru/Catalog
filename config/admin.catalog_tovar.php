@@ -21,7 +21,7 @@ return [
             /*все что касается чтения в таблицу*/
             "read"=>[
                 "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar",
+                    "sql"=>"select * from catalog_tovar where new_date is null or (new_date and new_session='".session_id()."')",
                     "PrimaryKey"=>"id",
                 ],
             ],
@@ -95,7 +95,7 @@ return [
                                     "label"=>"Новый товар"
                                 ],
                                 "attributes"=>[
-                                    "onclick"=>"newTovar()",
+                                    "onclick"=>"newTovar(0)",
                                     "class"=>"btn btn-primary btn-sm",
                                 ]
                             ]),
@@ -104,7 +104,7 @@ return [
                                     "label"=>"Новый товар с характеристиками"
                                 ],
                                 "attributes"=>[
-                                    "onclick"=>"newTovar()",
+                                    "onclick"=>"newTovar(1)",
                                     "class"=>"btn btn-secondary btn-sm",
                                 ]
                             ]),
@@ -122,33 +122,6 @@ return [
                     ]),
                     ColModelHelper::text("poz",["label"=>"Порядок","width"=>70,"editable"=>false]),
                     ColModelHelper::checkbox("public",["label"=>"Публ.","width"=>50]),
-                    /*ColModelHelper::interfaces("id",
-                                         [
-                                             "label"=>"Редактировать",
-                                             "width"=>160,
-                                             "formatoptions" => [
-                                                 "items"=>[
-                                                    "button1"=> [
-                                                        "label"=>"Подробности",
-                                                        "interface"=>"/adm/universal-interface/tovar_detal",
-                                                        "icon"=> "ui-icon-contact",
-                                                        "dialog"=>[
-                                                            "title"=>"Подробности",
-                                                            "resizable"=>true,
-                                                            "closeOnEscape"=>true,
-                                                            "width"=>"680",
-                                                            "position"=>[
-                                                                "my"=>"left top",
-                                                                "at"=>"left top",
-                                                                "of"=>"#contant-container"
-                                                            ],
-
-                                                        ],
-                                                     ],
-                                                 ],
-                                             ]
-                                         ]),
-*/
                     
                     ColModelHelper::jscellActions("myaction",["formatoptions"=>["onEdit"=>"editTovar"]]),
                 ],

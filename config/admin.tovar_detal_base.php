@@ -29,6 +29,8 @@ return [
             "actionsEvent"=>[
                 /*что делать после успешной записи формы*/
                 "FormAfterSubmitOkEvent"=>'$("#catalog_tovar").trigger("reloadGrid");',
+                /*что делать перед записью на сервер, до отправки формы*/
+                "FormBeforeSubmitOkEvent"=>'$("input[name=new_date]").val("null");$("input[name=new_session]").val("null"); ',
             ],
 
             /*внешний вид*/
@@ -62,6 +64,8 @@ return [
                         ]),
                         //это ID товара
                         RowModelHelper::hidden("id"),
+                        RowModelHelper::hidden("new_date"),
+                        RowModelHelper::hidden("new_session"),
                     ],
                     'input_filter' => [
                         "name" => [

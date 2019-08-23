@@ -48,12 +48,12 @@ return [
     'router' => [
         'routes' => [
             'admin_tovar' => [
-                'type' => Segment::class,
+                'type' => Literal::class,
                 'options' => [
-                    'route'    => '/adm/admin_tovar/:action',
+                    'route'    => '/adm/admin_catalog/tovar_new',
                     'defaults' => [
                         'controller' => Controller\AdminController::class,
-                        'action'     => 'index',
+                        'action'     => 'tovarnew',
                     ],
                 ],
             ],
