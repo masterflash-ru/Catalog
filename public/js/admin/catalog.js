@@ -28,6 +28,11 @@ function editTovar(el)
     } 
 }
 
+function delTovar(el)
+{
+    var rowid = $(el).closest("tr.jqgrow").attr("id");
+    jQuery("#catalog_tovar").jqGrid('delGridRow', rowid, {} );
+}
 
 
 $(document).ready(function() {

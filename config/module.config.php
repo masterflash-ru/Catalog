@@ -47,7 +47,7 @@ return [
 	//маршруты
     'router' => [
         'routes' => [
-            'admin_tovar' => [
+            'admin_catalog_new' => [
                 'type' => Literal::class,
                 'options' => [
                     'route'    => '/adm/admin_catalog/tovar_new',

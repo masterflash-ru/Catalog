@@ -3,6 +3,7 @@ namespace Mf\Catalog\Controller\Factory;
 
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
+use Mf\Storage\Service\ImagesLib;
 
 
 class AdminControllerFactory implements FactoryInterface
@@ -10,6 +11,7 @@ class AdminControllerFactory implements FactoryInterface
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {
         $connection=$container->get('DefaultSystemDb');
-        return new $requestedName($connection);
+        $ImagesLib=$container->get(ImagesLib::class);
+        return new $requestedName($connection,$ImagesLib);
     }
 }

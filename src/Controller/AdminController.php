@@ -15,11 +15,13 @@ class AdminController extends AbstractActionController
 {
 
     protected $connection;
+    protected $ImagesLib;
 
 
-    public function __construct($connection)
+    public function __construct($connection,$ImagesLib)
     {
         $this->connection=$connection;
+        $this->ImagesLib=$ImagesLib;
     }
 
 
@@ -52,9 +54,8 @@ class AdminController extends AbstractActionController
         //получим ID новой записи
         $rez["id"]=$rs->Fields->Item["id"]->Value;
         $rez["new_session"]=$rs->Fields->Item["new_session"]->Value;
-        
-        
         return new JsonModel($rez);
     }
+
 
 }

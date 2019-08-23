@@ -255,10 +255,13 @@ CREATE TABLE `catalog_tovar` (
   `title` char(255) DEFAULT NULL,
   `keywords` char(255) DEFAULT NULL,
   `description` varchar(5000) DEFAULT NULL,
+  `new_session` char(127) DEFAULT NULL COMMENT 'новый товар - сессия сеанса',
+  `new_date` datetime DEFAULT NULL COMMENT 'Новый товар - дата создания',
   PRIMARY KEY (`id`),
   UNIQUE KEY `url` (`url`),
   KEY `public` (`public`),
-  KEY `name` (`name`)
+  KEY `name` (`name`),
+  KEY `new_session` (`new_session`,`new_date`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='сам товар';
 /*!40101 SET character_set_client = @saved_cs_client */;
 

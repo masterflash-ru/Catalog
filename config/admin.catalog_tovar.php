@@ -25,25 +25,6 @@ return [
                     "PrimaryKey"=>"id",
                 ],
             ],
-            /*редактирование*/
-            "edit"=>[
-                "cache" =>[
-                    "tags"=>["catalog_tovar"],
-                    "keys"=>["catalog_tovar"],
-                ],
-
-                "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar",
-                    "PrimaryKey"=>"id",
-                ],
-
-            ],
-            "add"=>[
-                "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar",
-                    "PrimaryKey"=>"id",
-                ],
-            ],
             //удаление записи
             "del"=>[
                 "cache" =>[
@@ -53,6 +34,12 @@ return [
                 "db"=>[//плагин выборки из базы
                     "sql"=>"select * from catalog_tovar",
                     "PrimaryKey"=>"id",
+                ],
+                "Images"=>[
+                    "storage_items_array"=>[
+                        "catalog_tovar_detal",
+                        "catalog_tovar_anons",
+                    ]
                 ],
             ],
             /*внешний вид*/
@@ -72,15 +59,7 @@ return [
                 "rownumbers" => false,
                 "navgrid" => [
                     "button" => NavGridHelper::Button(["search"=>false,"edit"=>false,"add"=>false,"del"=>false]),
-                    //"editOptions"=>NavGridHelper::editOptions(),
-                   // "addOptions"=>NavGridHelper::addOptions(),
-                    //"delOptions"=>NavGridHelper::delOptions(),
                 ],
-                //дополнительные кнопки в панель сетки
-               /* "navButtonAdd"=>[
-                    NavGridHelper::ButtonAdd(["caption"=>"Заголовок","title"=>"Добавить товар","onClickButton"=>new Expr('newTovar')]),
-                    NavGridHelper::ButtonAdd(["caption"=>"Заголовок1","title"=>"Добавить товар1"]),
-                ],*/
                 
                 //"colMenu"  =>  true ,
                 /*область перед телом сетки, toolbar
@@ -123,7 +102,7 @@ return [
                     ColModelHelper::text("poz",["label"=>"Порядок","width"=>70,"editable"=>false]),
                     ColModelHelper::checkbox("public",["label"=>"Публ.","width"=>50]),
                     
-                    ColModelHelper::jscellActions("myaction",["formatoptions"=>["onEdit"=>"editTovar"]]),
+                    ColModelHelper::jscellActions("myaction",["formatoptions"=>["onEdit"=>"editTovar","onDel"=>"delTovar"]]),
                 ],
             ],
         ],
