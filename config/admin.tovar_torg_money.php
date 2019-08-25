@@ -16,19 +16,21 @@ return [
             
             /*все что касается чтения в таблицу*/
             "read"=>[
-                "db1"=>[//если записи нет, тогда вставим пустую
+               /* "db1"=>[//если записи нет, тогда вставим пустую
                     "sql"=>"insert into catalog_tovar_currency (catalog_tovar)
                        select id from catalog_tovar where id=:id 
                         and NOT EXISTS (select catalog_tovar from catalog_tovar_currency where catalog_tovar=:id)",
                 ],
                 "db"=>[//плагин выборки из базы
                     "sql"=>"select * from catalog_tovar_currency where catalog_tovar=:id",
-                ],
+                ],*/
+                Service\Admin\Zform\Plugin\CatalogPriceType::class=>[],
             ],
             "edit"=>[
-                "db"=>[//плагин выборки из базы
+               /* "db"=>[//плагин выборки из базы
                     "sql"=>"select * from catalog_tovar_currency ", 
-                ],
+                ],*/
+                Service\Admin\Zform\Plugin\CatalogPriceType::class=>[]
             ],
             
             /*поведение формы*/
@@ -41,7 +43,7 @@ return [
                 "caption" => "Управление ценами",
                 "rowModel" => [
                     'elements' => [
-                        RowModelHelper::select("catalog_currency",[
+                       /* RowModelHelper::select("catalog_currency",[
                             'options'=>[
                                 "label"=>"Валюта базовой цены:"
                             ],
@@ -53,10 +55,24 @@ return [
                                 ],
                             ],
 
+                        ]),*/
+                        RowModelHelper::DynamicArray(null,[
+                            'fields'=>[
+                               // RowModelHelper::text("xml_id",['options'=>["label"=>"xml_id"]]),
+                               // RowModelHelper::text("xml_id111",['options'=>["label"=>"xml_id111"]]),
+                            ],
+                            "plugins"=>[
+                                "read"=>[
+                                    Service\Admin\Zform\Plugin\CatalogPriceType::class=>[]
+                                ]
+                            ]
                         ]),
 
-                        RowModelHelper::text("value",['options'=>["label"=>"Базовая цена"]]),
-                        RowModelHelper::checkbox("nds",['options'=>["label"=>"НДС включен в цену"]]),
+
+                        //RowModelHelper::text("value",['options'=>["label"=>"Базовая цена"]]),
+                        //RowModelHelper::checkbox("nds",['options'=>["label"=>"НДС включен в цену"]]),
+                        
+                        
                         RowModelHelper::submit("submit",[
                             'attributes'=>['value' => 'Записать'],
                         ]),

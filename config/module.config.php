@@ -102,6 +102,7 @@ return [
         "catalog_store"=>__DIR__."/admin.catalog_store.php",                //склады
         "catalog_properties"=>__DIR__."/admin.catalog_properties.php",      //общие параметры товара
         "catalog_properties_list"=>__DIR__."/admin.catalog_properties_list.php",      //общие параметры списки
+        "catalog_price_type" => __DIR__."/admin.catalog_price_type.php",     //типы цен
         
         "catalog_tovar"=>__DIR__."/admin.catalog_tovar.php",                //список всех товаров
         "tovar_detal"=>__DIR__."/admin.tovar_detal.php",                    //табы для редактирвоания товара
@@ -132,6 +133,7 @@ return [
             Service\Admin\JqGrid\Plugin\GetCategoryTree::class => Service\Admin\JqGrid\Plugin\Factory\GetCategoryTree::class,
             Service\Admin\JqGrid\Plugin\SaveCategory2tovar::class => Service\Admin\JqGrid\Plugin\Factory\SaveCategory2tovar::class,
             Service\Admin\Zform\Plugin\CatalogProperties::class => Service\Admin\Zform\Plugin\Factory\CatalogProperties::class,
+            Service\Admin\Zform\Plugin\CatalogPriceType::class => Service\Admin\Zform\Plugin\Factory\CatalogPriceType::class,
         ],
         'aliases' =>[
         ],

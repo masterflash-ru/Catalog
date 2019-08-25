@@ -61,6 +61,16 @@ CREATE TABLE `catalog_category2tovar` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `catalog_category2tovar`
+--
+
+LOCK TABLES `catalog_category2tovar` WRITE;
+/*!40000 ALTER TABLE `catalog_category2tovar` DISABLE KEYS */;
+INSERT INTO `catalog_category2tovar` VALUES (7,1),(9,1);
+/*!40000 ALTER TABLE `catalog_category2tovar` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `catalog_currency`
 --
 
@@ -78,6 +88,16 @@ CREATE TABLE `catalog_currency` (
   PRIMARY KEY (`currency`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `catalog_currency`
+--
+
+LOCK TABLES `catalog_currency` WRITE;
+/*!40000 ALTER TABLE `catalog_currency` DISABLE KEYS */;
+INSERT INTO `catalog_currency` VALUES ('EUR',1,71.7100,300,'978',0,71.710000000000),('RUB',1,1.0000,100,'643',1,1.000000000000),('USD',1,64.8100,200,'840',0,64.810000000000);
+/*!40000 ALTER TABLE `catalog_currency` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `catalog_file`
@@ -129,6 +149,32 @@ LOCK TABLES `catalog_measure` WRITE;
 /*!40000 ALTER TABLE `catalog_measure` DISABLE KEYS */;
 INSERT INTO `catalog_measure` VALUES (1,6,'Метр','м','m','MTR',0),(2,112,'Литр','л.','l','LTR',0),(3,163,'Грамм','г','g','GRM',0),(4,166,'Килограмм','кг','kg','KGM',0),(5,796,'Штука','шт','pc. 1','PCE. NMB',1);
 /*!40000 ALTER TABLE `catalog_measure` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `catalog_price_type`
+--
+
+DROP TABLE IF EXISTS `catalog_price_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalog_price_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` char(255) DEFAULT NULL,
+  `is_base` int(11) DEFAULT NULL COMMENT 'флаг базовой цены',
+  `xml_id` char(127) DEFAULT NULL COMMENT 'связь с 1С',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='Типы цен';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `catalog_price_type`
+--
+
+LOCK TABLES `catalog_price_type` WRITE;
+/*!40000 ALTER TABLE `catalog_price_type` DISABLE KEYS */;
+INSERT INTO `catalog_price_type` VALUES (1,'Базовая',1,NULL);
+/*!40000 ALTER TABLE `catalog_price_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -237,6 +283,16 @@ CREATE TABLE `catalog_store` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `catalog_store`
+--
+
+LOCK TABLES `catalog_store` WRITE;
+/*!40000 ALTER TABLE `catalog_store` DISABLE KEYS */;
+INSERT INTO `catalog_store` VALUES (1,'по умолчанию',1,'Адрес склада','3452345','',0);
+/*!40000 ALTER TABLE `catalog_store` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `catalog_tovar`
 --
 
@@ -262,7 +318,7 @@ CREATE TABLE `catalog_tovar` (
   KEY `public` (`public`),
   KEY `name` (`name`),
   KEY `new_session` (`new_session`,`new_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='сам товар';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='сам товар';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -276,6 +332,7 @@ CREATE TABLE `catalog_tovar_currency` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `catalog_tovar` int(11) DEFAULT NULL,
   `catalog_currency` char(3) DEFAULT NULL COMMENT 'код валюты',
+  `catalog_price_type` int(11) DEFAULT NULL COMMENT 'ID типа цены',
   `catalog_tovar_sku_properties` int(11) DEFAULT NULL COMMENT 'ID комбинации хар-к или null',
   `value` decimal(11,2) DEFAULT NULL,
   `nds` int(11) DEFAULT NULL COMMENT '1-НДС включен в цену',
@@ -283,13 +340,14 @@ CREATE TABLE `catalog_tovar_currency` (
   KEY `catalog_currency` (`catalog_currency`),
   KEY `catalog_tovar` (`catalog_tovar`),
   KEY `catalog_tovar_properties` (`catalog_tovar_sku_properties`),
+  KEY `catalog_price_type` (`catalog_price_type`),
   CONSTRAINT `catalog_tovar_currency_fk` FOREIGN KEY (`catalog_currency`) REFERENCES `catalog_currency` (`currency`) ON DELETE CASCADE,
   CONSTRAINT `catalog_tovar_currency_fk1` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `catalog_tovar_currency_fk2` FOREIGN KEY (`catalog_tovar_sku_properties`) REFERENCES `catalog_tovar_sku_properties` (`id_combination`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COMMENT='цены товара';
+  CONSTRAINT `catalog_tovar_currency_fk2` FOREIGN KEY (`catalog_tovar_sku_properties`) REFERENCES `catalog_tovar_sku_properties` (`id_combination`) ON DELETE CASCADE,
+  CONSTRAINT `catalog_tovar_currency_fk3` FOREIGN KEY (`catalog_price_type`) REFERENCES `catalog_price_type` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8 COMMENT='цены товара';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
 -- Table structure for table `catalog_tovar_gabarits`
 --
 
@@ -388,7 +446,7 @@ CREATE TABLE `catalog_tovar_store` (
   CONSTRAINT `catalog_tovar_store_fk` FOREIGN KEY (`catalog_store`) REFERENCES `catalog_store` (`id`) ON DELETE CASCADE,
   CONSTRAINT `catalog_tovar_store_fk1` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
   CONSTRAINT `catalog_tovar_store_fk2` FOREIGN KEY (`catalog_tovar_sku_properties`) REFERENCES `catalog_tovar_sku_properties` (`id_combination`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='склад';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='склад';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -401,4 +459,4 @@ CREATE TABLE `catalog_tovar_store` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-22 12:30:25
+-- Dump completed on 2019-08-25 22:24:25
