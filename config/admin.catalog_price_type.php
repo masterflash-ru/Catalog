@@ -31,7 +31,10 @@ return [
                     "tags"=>["catalog_price_type"],
                     "keys"=>["catalog_price_type"],
                 ],
-
+                "db1"=>[//сбросим флаг is_base
+                    "sql"=>"update catalog_price_type set is_base=null",
+                    "NotCreateRecordSet"=>true,
+                ],
                 "db"=>[//плагин выборки из базы
                     "sql"=>"select * from catalog_price_type",
                     "PrimaryKey"=>"id",
@@ -39,6 +42,10 @@ return [
 
             ],
             "add"=>[
+                "db1"=>[//сбросим флаг is_base
+                    "sql"=>"update catalog_price_type set is_base=null",
+                    "NotCreateRecordSet"=>true,
+                ],
                 "db"=>[//плагин выборки из базы
                     "sql"=>"select * from catalog_price_type",
                     "PrimaryKey"=>"id",

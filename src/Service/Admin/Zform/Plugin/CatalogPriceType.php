@@ -12,11 +12,12 @@ use Exception;
 class CatalogPriceType extends AbstractPlugin
 {
     protected $connection;
+    protected $config;
 
-    public function __construct($connection)
+    public function __construct($connection,$config)
     {
         $this->connection=$connection;
-
+        $this->config=$config;
     }
     
     /**
@@ -31,7 +32,7 @@ class CatalogPriceType extends AbstractPlugin
             throw new  Exception("Ошибка в <b>".__CLASS__."</b> метод <b>".__METHOD__."</b> ID товара не может быть пустым");
         }
         $rez=["id"=>$id,"catalog_tovar"=>$id];
-        $rst=$this->connection->Execute("select * from catalog_price_type order by is_base desc");
+        $rst=$this->connection->Execute("select * from catalog_price_type order by name");
         
         $rs=new RecordSet();
         $rs->CursorType =adOpenKeyset;
@@ -40,10 +41,17 @@ class CatalogPriceType extends AbstractPlugin
 
         while (!$rst->EOF){
             $rs->Filter="catalog_price_type=".(int)$rst->Fields->Item["id"]->Value;
-            $rez["catalog_currency__".$rst->Fields->Item["id"]->Value]=$rs->Fields->Item["catalog_currency"]->Value;
-            $rez["value__".$rst->Fields->Item["id"]->Value]=$rs->Fields->Item["value"]->Value;
-            $rez["nds__".$rst->Fields->Item["id"]->Value]=$rs->Fields->Item["nds"]->Value;
-            $rst->MoveNext();
+            if (!$rs->EOF){//есть значения
+                $rez["catalog_currency__".$rst->Fields->Item["id"]->Value]=$rs->Fields->Item["catalog_currency"]->Value;
+                $rez["value__".$rst->Fields->Item["id"]->Value]=$rs->Fields->Item["value"]->Value;
+                $rez["vat_in__".$rst->Fields->Item["id"]->Value]=$rs->Fields->Item["vat_in"]->Value;
+                $rez["vat_value__".$rst->Fields->Item["id"]->Value]=$rs->Fields->Item["vat_value"]->Value;
+            } else {
+                $rez["vat_in__".$rst->Fields->Item["id"]->Value]=$this->config["catalog"]["default"]["vat_in"];
+                $rez["vat_value__".$rst->Fields->Item["id"]->Value]=$this->config["catalog"]["default"]["vat_value"];
+                $rez["catalog_currency__".$rst->Fields->Item["id"]->Value]=$this->config["catalog"]["default"]["currency"];
+            }
+             $rst->MoveNext();
         }
         
         return $rez;
@@ -69,13 +77,15 @@ class CatalogPriceType extends AbstractPlugin
         $rst=new RecordSet();
         $rst->CursorType =adOpenKeyset;
         $rst->MaxRecords=0;
-        $rst->Open("select id from catalog_price_type",$this->connection);
+        $rst->Open("select id,is_base from catalog_price_type",$this->connection);
 
         $rs=new RecordSet();
         $rs->CursorType =adOpenKeyset;
         $rs->MaxRecords=0;
         $rs->Open("select * from catalog_tovar_currency where catalog_tovar=$id",$this->connection);
         $rec=[];
+        $vat_in=0;
+        $vat_value=0;
         foreach ($postParameters as $k=>$v){
             $n=explode("__",$k);
             if (count($n)!=2 && !in_array("properties",$n)){
@@ -98,6 +108,17 @@ class CatalogPriceType extends AbstractPlugin
             }
             $rs->Update();
         }
+        //обновим все записи значения НДС для не базовых типов цен
+        $a=0;
+        $this->connection->Execute("create temporary table tmp (vat_in int(11), vat_value decimal(11,2)) ENGINE=MEMORY DEFAULT CHARSET=utf8",$a,adExecuteNoRecords);
+        $this->connection->Execute("insert into tmp 
+                select vat_in, vat_value from catalog_tovar_currency 
+                    where  catalog_tovar=$id and 
+                    catalog_price_type=(select id from catalog_price_type where is_base=1 limit 1)",$a,adExecuteNoRecords);
+        $this->connection->Execute("update catalog_tovar_currency c,tmp 
+                                set c.vat_in=tmp.vat_in, c.vat_value=tmp.vat_value
+                                    where c.catalog_tovar=$id",$a,adExecuteNoRecords);
+        $this->connection->Execute("drop table tmp",$a,adExecuteNoRecords);
     }
 
 
@@ -108,14 +129,27 @@ class CatalogPriceType extends AbstractPlugin
     */
     public function ReadDynamicArray(array $dynamic_element=[])
     {
-        $rs=$this->connection->Execute("select * from catalog_price_type order by is_base desc");
+        $rs=$this->connection->Execute("select * from catalog_price_type  order by is_base desc, name asc");
+        
+        $vat_values=$this->config["catalog"]["vat_values"];
 
         while (!$rs->EOF){
-            $rez[]=$rez[]=RowModelHelper::caption(null,[
+            $rez[]=RowModelHelper::caption(null,[
                 'options'=>[
                     "label"=>$rs->Fields->Item["name"]->Value,
                 ],
             ]);
+            
+            if ($rs->Fields->Item["is_base"]->Value>0){
+                $rez[]= RowModelHelper::select("vat_value__".$rs->Fields->Item["id"]->Value,[
+                            'options'=>[
+                                "label"=>"Ставка НДС:",
+                                "value_options"=>$vat_values,
+                            ],
+                        ]);
+                $rez[]= RowModelHelper::checkbox("vat_in__".$rs->Fields->Item["id"]->Value,['options'=>["label"=>"НДС включен в цену"]]);
+
+            }
             
             $rez[]= RowModelHelper::select("catalog_currency__".$rs->Fields->Item["id"]->Value,[
                             'options'=>[
@@ -136,7 +170,6 @@ class CatalogPriceType extends AbstractPlugin
                     "label"=>"Значение",
                 ],
             ]);
-            $rez[]=RowModelHelper::checkbox("nds__".$rs->Fields->Item["id"]->Value,['options'=>["label"=>"НДС включен в цену"]]);
             
             $rs->MoveNext();
         }

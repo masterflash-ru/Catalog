@@ -4,7 +4,7 @@
 namespace Mf\Catalog;
 
 use Zend\Mvc\MvcEvent;
-
+use Zend\EventManager\Event;
 
 class Module
 {
@@ -17,9 +17,22 @@ public function getConfig()
 public function onBootstrap(MvcEvent $event)
 {
 	$eventManager = $event->getApplication()->getEventManager();
+    $ServiceManager=$event->getApplication()-> getServiceManager();
     $sharedEventManager = $eventManager->getSharedManager();
     // объявление слушателя для изменения макета на админский + проверка авторизации root
     $sharedEventManager->attach("Mf", MvcEvent::EVENT_DISPATCH, [$this, 'onDispatch'], 1);
+    
+    //стандартный обработчик загрузки из 1С в каталог после импорта
+    $sharedEventManager->attach("simba.1c", "catalogImportComplete", function(Event $event) use ($ServiceManager){
+        $service=$ServiceManager->build(Service\Import::class);
+        return $service->CatalogImport();
+    },2);
+    //стандартный обработчик загрузки из 1С в каталог после импорта
+    $sharedEventManager->attach("simba.1c", "catalogOffersComplete", function(Event $event) use ($ServiceManager){
+        $service=$ServiceManager->build(Service\Import::class);
+        return $service->CatalogOffers();
+    },2);
+
 }
 
 /*слушатель для проверки авторизован ли админ*/
