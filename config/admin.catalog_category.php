@@ -87,7 +87,7 @@ return [
                 ], 
                 "navgrid" => [
                     "button" => NavGridHelper::Button(["search"=>false,"add"=>true,"edit"=>true,"del"=>true,"refresh"=>true]),
-                    "editOptions"=>NavGridHelper::editOptions(["reloadAfterSubmit"=>true,]),
+                    "editOptions"=>NavGridHelper::editOptions(["reloadAfterSubmit"=>true,"closeAfterEdit"=>true]),
                     "addOptions"=>NavGridHelper::addOptions(["reloadAfterSubmit"=>true,"closeAfterAdd"=>true]),
                     "delOptions"=>NavGridHelper::delOptions(),
                 ],
@@ -96,6 +96,14 @@ return [
                                          [
                                              "label"=>"Имя",
                                              "width"=>250,
+                                             "editoptions" => [
+                                                 "size" => 80,
+                                             ],
+                                         ]),
+                    ColModelHelper::text("poz",
+                                         [
+                                             "label"=>"Порядок",
+                                             "width"=>80,
                                              "editoptions" => [
                                                  "size" => 80,
                                              ],
@@ -117,7 +125,23 @@ return [
                                                     ],
                                                 ],
                                                   ]),
-                    ColModelHelper::cellActions("myaction",["formatoptions"=>["editformbutton"=>true]]),
+                    ColModelHelper::ckeditor("info",[
+                        "label"=>"Подробно категория",
+                        "plugins"=>[
+                            "edit"=>[
+                                "ClearContent"=>[],
+                            ],
+                            "add"=>[
+                                "ClearContent"=>[],
+                            ],
+                        ],
+                    ]),
+                    
+                    ColModelHelper::textarea("title",["label"=>"TITLE","hidden"=>true,"editrules"=>["edithidden"=>true]]),
+                    ColModelHelper::textarea("keywords",["label"=>"KEYWORDS","hidden"=>true,"editrules"=>["edithidden"=>true]]),
+                    ColModelHelper::textarea("description",["label"=>"DESCRIPTION","hidden"=>true,"editrules"=>["edithidden"=>true]]),
+
+                    ColModelHelper::cellActions(),
                     ColModelHelper::hidden("id"),
                 ],
             ],

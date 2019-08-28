@@ -57,6 +57,16 @@ return [
                     ],
                 ],
             ],
+            'import_file_1c_cron' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/1c/cron',
+                    'defaults' => [
+                        'controller' => Controller\ImportController::class,
+                        'action'     => 'cron',
+                    ],
+                ],
+            ],
         ],
     ],
 	 
@@ -70,6 +80,7 @@ return [
     'controllers' => [
         'factories' => [
             Controller\AdminController::class => Controller\Factory\AdminControllerFactory::class,
+             Controller\ImportController::class => Controller\Factory\ImportControllerFactory::class,
         ],
 	],
     
@@ -149,6 +160,9 @@ return [
             "vat_in" => true,           /*НДС включен в цену товара (по умолчанию, влияет на "крыжик при создании товара")*/
             "vat_value" => 10,          /*ставка НДС по умолчанию*/
             "currency"=>"RUB",          /*Имя валюты по умолчанию*/
+        ],
+        "import" =>[
+            "1c_internal" => true       //внутренний обработчик импорта 
         ],
     ],
     

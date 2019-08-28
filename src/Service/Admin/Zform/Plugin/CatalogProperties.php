@@ -125,6 +125,7 @@ class CatalogProperties extends AbstractPlugin
                 'options'=>[
                     "label"=>$rs->Fields->Item["name"]->Value,
                     "value_options"=>$list,
+                    "empty_option"=>""
                 ],
             ]);
             
