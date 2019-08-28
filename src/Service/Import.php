@@ -89,13 +89,10 @@ class Import
                     (select id from catalog_tovar where xml_id=import_1c_tovar_properties.1c_tovar_id1c  and xml_id>''),
                     (select id from catalog_properties_list where xml_id=import_1c_tovar_properties.property_list_id and xml_id>''),
                     (select id from catalog_properties where xml_id=import_1c_tovar_properties.property_id  and xml_id>''),
-                    concat('s:',length(value),':"',value,'";')
+                    concat('s:',length(value),':\"',value,'\";')
                         from import_1c_tovar_properties
                             where property_list_id not in(select xml_id from catalog_properties where xml_id>'')
                     ",$a,adExecuteNoRecords);
-
-        
-
     }
 
     /**
@@ -103,6 +100,60 @@ class Import
     */
 	public function CatalogOffers()
     {
+        //загружаем новый тип цен
+        $this->connection->Execute("insert into catalog_price_type (xml_id,name,is_base)
+                    select id1c,type,0
+                        from import_1c_price_type where flag_change=1 and id1c not in(select xml_id from catalog_price_type where xml_id>'')",$a,adExecuteNoRecords);
+        //меняем имя, если было изменение
+        $this->connection->Execute("update catalog_price_type c, import_1c_price_type i
+                    set c.name=i.type where c.xml_id=i.id1c",$a,adExecuteNoRecords);
+        
+        //типы склада
+        $this->connection->Execute("insert into catalog_store (xml_id,name,public)
+                    select id1c,type,1
+                        from import_1c_store_type where flag_change=1 and id1c not in(select xml_id from catalog_store where xml_id>'')",$a,adExecuteNoRecords);
+        //меняем имя, если было изменение
+        $this->connection->Execute("update catalog_store c, import_1c_store_type i
+                    set c.name=i.type where c.xml_id=i.id1c",$a,adExecuteNoRecords);
+
+        //загружаем все цены
+        $this->connection->Execute("insert catalog_tovar_currency (catalog_tovar,catalog_currency,catalog_price_type,value,vat_in,vat_value)
+                    select 
+                        (select id from catalog_tovar where xml_id=import_1c_price.id1c),
+                        currency,
+                        (select id from catalog_price_type where xml_id=import_1c_price.import_1c_price_type),
+                        price,
+                        (select vat_in from import_1c_price_type where id1c=import_1c_price.import_1c_price_type),
+                        (select vat from import_1c_tovar where id1c=import_1c_price.id1c)
+                            from 
+                                import_1c_price where 
+                                    id1c not in(select xml_id from catalog_tovar where xml_id>'' and id in(select catalog_tovar from catalog_tovar_currency))",$a,adExecuteNoRecords);
+
+        
+        
+ /* 
+CREATE TABLE `catalog_tovar_currency` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `catalog_tovar` int(11) DEFAULT NULL,
+  `catalog_currency` char(3) DEFAULT NULL COMMENT 'код валюты',
+  `catalog_price_type` int(11) DEFAULT NULL COMMENT 'ID типа цены',
+  `catalog_tovar_sku_properties` int(11) DEFAULT NULL COMMENT 'ID комбинации хар-к или null',
+  `value` decimal(11,2) DEFAULT NULL,
+  `vat_in` int(11) DEFAULT NULL COMMENT '1-НДС включен в цену',
+  `vat_value` decimal(11,2) DEFAULT NULL COMMENT 'значение НДС',
+  PRIMARY KEY (`id`),
+
+
+
+CREATE TABLE `import_1c_price` (
+  `id1c` char(127) NOT NULL COMMENT 'ID товара в 1С',
+  `import_1c_price_type` char(127) DEFAULT NULL COMMENT 'ID типа прайса в 1С',
+  `currency` char(3) DEFAULT NULL,
+  `price` decimal(11,2) DEFAULT NULL COMMENT 'сама цена',
+  KEY `import_1c_price_type` (`import_1c_price_type`),
+  KEY `id1c` (`id1c`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='сами прайсы';
+*/
 
     }
     
