@@ -101,10 +101,16 @@ class CatalogProperties extends AbstractPlugin
     * осблуживает поле формы типа DynamicArray, чтение
     * создает динамические поля путем генерации конфига в формате фабрики Zend
     * $dynamic_element - массив конфига из динамического поля (все что внутри spec )
+    * возвращает массив:
+    * [
+    *   "elements"  =>  [], - собственно массив элементов, в формате ZF (https://docs.zendframework.com/zend-form/quick-start/)
+    *   "input_filter"=>[], - массив фильтров и валидаторов в формате ZF (https://docs.zendframework.com/zend-form/quick-start/)
+    *  ]
     */
     public function ReadDynamicArray(array $dynamic_element=[])
     {
-        $rs=$this->connection->Execute("select * from catalog_properties");
+        $rs=$this->connection->Execute("select * from catalog_properties order by poz");
+        $input_filter=[];
 
         $rslist=new RecordSet();
         $rslist->CursorType =adOpenKeyset;
@@ -128,11 +134,13 @@ class CatalogProperties extends AbstractPlugin
                     "empty_option"=>""
                 ],
             ]);
+            //разрешим пустой ввод
+            $input_filter["properties_".$rs->Fields->Item["id"]->Value]= ['required' => false];
             
             $rs->MoveNext();
         }
 
-        return $rez;
+        return ["elements"=>$rez,"input_filter"=>$input_filter];
     }
 
     

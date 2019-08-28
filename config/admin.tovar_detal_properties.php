@@ -37,8 +37,8 @@ return [
                     'elements' => [
                         RowModelHelper::DynamicArray(null,[
                             'fields'=>[
-                               // RowModelHelper::text("xml_id",['options'=>["label"=>"xml_id"]]),
-                               // RowModelHelper::text("xml_id111",['options'=>["label"=>"xml_id111"]]),
+                            ],
+                            'input_filters'=>[  
                             ],
                             "plugins"=>[
                                 "read"=>[

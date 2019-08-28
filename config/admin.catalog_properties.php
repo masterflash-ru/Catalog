@@ -62,7 +62,7 @@ return [
                 //"width" => "1100px",
                 "rowNum" => 20,
                 "rowList" => [20,50,100],
-                "sortname" => "name",
+                "sortname" => "poz",
                 "sortorder" => "asc",
                 "viewrecords" => true,
                 "autoencode" => false,
@@ -77,6 +77,7 @@ return [
                 "colModel" => [
                     ColModelHelper::text("id",["label"=>"ID","width"=>80,"editable" => false]),
                     ColModelHelper::text("name",["label"=>"Имя параметра","width"=>250,"editoptions" => ["size"=>50 ]]),
+                    ColModelHelper::text("poz",["label"=>"Порядок","width"=>90,"editoptions" => ["size"=>50 ]]),
                     ColModelHelper::select("type",
                                            [
                                                "label"=>"Тип поля в админке",
