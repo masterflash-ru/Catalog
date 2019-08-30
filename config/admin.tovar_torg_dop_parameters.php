@@ -16,20 +16,10 @@ return [
             
             /*все что касается чтения в таблицу*/
             "read"=>[
-                "db1"=>[//если записи нет, тогда вставим пустую
-                    "sql"=>"insert into catalog_tovar_gabarits (catalog_tovar,catalog_measure_code)
-                       select id,(select code from catalog_measure where is_default>0) 
-                        from catalog_tovar where id=:id 
-                            and NOT EXISTS (select catalog_tovar from catalog_tovar_gabarits where catalog_tovar=:id)",
-                ],
-                "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar_gabarits where catalog_tovar=:id",
-                ],
+                 Service\Admin\Zform\Plugin\CatalogDopProperties::class=>[],
             ],
             "edit"=>[
-                "db"=>[//плагин выборки из базы
-                    "sql"=>"select * from catalog_tovar_gabarits", 
-                ],
+                Service\Admin\Zform\Plugin\CatalogDopProperties::class=>[],
             ],
             
             /*поведение формы*/
@@ -55,7 +45,8 @@ return [
                             ],
 
                         ]),
-
+                        RowModelHelper::text("coefficient",['options'=>["label"=>"Коэффициент единицы измерения"]]),
+                        RowModelHelper::text("quantity",['options'=>["label"=>"Общее количество товара"]]),
                         RowModelHelper::text("weight",['options'=>["label"=>"Вес (грамм)"]]),
                         RowModelHelper::text("length",['options'=>["label"=>"Длина (мм)"]]),
                         RowModelHelper::text("width",['options'=>["label"=>"Ширина (мм)"]]),

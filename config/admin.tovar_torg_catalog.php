@@ -15,8 +15,8 @@ return [
                     "interface"=>"tovar_torg_money"
                 ],
                 [
-                    "label"=>"Параметры (габариты)",
-                    "interface"=>"tovar_torg_gabarits"
+                    "label"=>"Доп. параметры",
+                    "interface"=>"tovar_torg_dop_parameters"
                 ],
                 [
                     "label"=>"Склады",

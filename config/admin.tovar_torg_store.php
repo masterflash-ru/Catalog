@@ -24,8 +24,8 @@ return [
                     "sql"=>"
                         select id as catalog_store,name,address,:id as tovar_id,
                             (select quantity from catalog_tovar_store where catalog_store=catalog_store.id and catalog_tovar=:id) as quantity,
-                            (select id from catalog_tovar_store where catalog_store=catalog_store.id and catalog_tovar=:id) as quantity_id,
-                            (select xml_id from catalog_tovar_store where catalog_store=catalog_store.id and catalog_tovar=:id) as xml_id
+                            (select id from catalog_tovar_store where catalog_store=catalog_store.id and catalog_tovar=:id) as quantity_id
+
                                 from catalog_store",
                     "PrimaryKey"=>"catalog_store",
                 ],
@@ -67,7 +67,7 @@ return [
                     ColModelHelper::text("name",["label"=>"Имя склада","editable" => false]),
                     ColModelHelper::text("address",["label"=>"Адрес склада","editable" => false]),
                     ColModelHelper::text("quantity",["label"=>"Остаток товара","width"=>180,"editoptions" => ["size"=>50 ]]),
-                    ColModelHelper::text("xml_id",["label"=>"XML_ID","width"=>180,"editoptions" => ["size"=>50 ]]),
+
                     
                     
                     

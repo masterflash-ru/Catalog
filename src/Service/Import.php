@@ -7,11 +7,15 @@ use ADO\Service\RecordSet;
 class Import 
 {
     protected $connection;
+    protected $ImagesLib;
+    protected $config;
     
     
-    public function __construct($connection) 
+    public function __construct($connection,$ImagesLib,$config) 
     {
         $this->connection=$connection;
+        $this->ImagesLib=$ImagesLib;
+        $this->config=$config;
     }
     
     /**
@@ -39,7 +43,7 @@ class Import
         /*загружаем/меняем ТОВАР, в таблице import_1c_tovar всегда обновленный товар*/        
         //вначале переименовываем то что есть
         $this->connection->Execute("update catalog_tovar c, import_1c_tovar i
-                set c.name=i.name, c.url=i.url
+                set c.name=i.name, c.url=i.url, c.quantity=i.quantity
                     where c.xml_id=i.id1c",$a,adExecuteNoRecords);
         //удалим старые связи товар-категории
         $this->connection->Execute("delete from catalog_category2tovar
@@ -49,8 +53,8 @@ class Import
         //Новая привязка к категориям будет после добавления новых товаров
         
         //загружаем новый товар
-        $this->connection->Execute("insert into catalog_tovar (xml_id,name,url,info,title,keywords,description,public,poz)
-                    select id1c,name,url,description,name,name,name,1,0
+        $this->connection->Execute("insert into catalog_tovar (xml_id,name,url,info,title,keywords,description,public,poz,quantity)
+                    select id1c,name,url,description,name,name,name,1,0,0
                         from import_1c_tovar where id1c not in(select xml_id from catalog_tovar where xml_id>'')",$a,adExecuteNoRecords);
         //привязываем новый товар к категориям
         $this->connection->Execute("insert into catalog_category2tovar (catalog_category, catalog_tovar)
@@ -93,6 +97,29 @@ class Import
                         from import_1c_tovar_properties
                             where property_list_id not in(select xml_id from catalog_properties where xml_id>'')
                     ",$a,adExecuteNoRecords);
+        //загрузка единиц измерения и коэффициенты
+        //вначале переименование
+        $this->connection->Execute("update catalog_tovar_gabarits g, import_1c_tovar i, catalog_tovar c
+                set g.catalog_measure_code=i.measure, g.coefficient=i.measure_ratio
+                    where g.catalog_tovar and c.xml_id=i.id1c",$a,adExecuteNoRecords);
+        //добавляем новые
+        $this->connection->Execute("insert into catalog_tovar_gabarits (catalog_measure_code,coefficient,catalog_tovar)
+                select measure,measure_ratio,
+                    (select id from catalog_tovar where xml_id=import_1c_tovar.id1c)
+                    from import_1c_tovar
+                        where id1c in(select xml_id from catalog_tovar where id not in(select catalog_tovar from catalog_tovar_gabarits))",$a,adExecuteNoRecords);
+
+        //бренды загружаем в общие параметры товара с именем "BREND"
+        $this->connection->Execute("insert into catalog_properties_list (xml_id,value,catalog_properties)
+                select id1c,name,
+                    (select id from catalog_properties where sysname='BREND')
+                        from import_1c_brend
+                            where id1c 
+                                not in(select xml_id from catalog_properties_list 
+                                        where xml_id>'' and catalog_properties in(select id from catalog_properties where sysname='BREND')
+                                        ) group by id1c
+                    ",$a,adExecuteNoRecords);
+
     }
 
     /**
@@ -104,6 +131,13 @@ class Import
         $this->connection->Execute("insert into catalog_price_type (xml_id,name,is_base)
                     select id1c,type,0
                         from import_1c_price_type where flag_change=1 and id1c not in(select xml_id from catalog_price_type where xml_id>'')",$a,adExecuteNoRecords);
+        
+        //смотрим кол-во типов цен, если запись единственная, тогда ее делаем по умолчанию, базовой
+        $rs=$this->connection->Execute("select count(*) as c from catalog_price_type");
+        if ($rs->Fields->Item["c"]->Value==1 && !$rs->EOF){
+            $this->connection->Execute("update catalog_price_type set is_base=1",$a,adExecuteNoRecords);
+        }
+        
         //меняем имя, если было изменение
         $this->connection->Execute("update catalog_price_type c, import_1c_price_type i
                     set c.name=i.type where c.xml_id=i.id1c",$a,adExecuteNoRecords);
@@ -129,42 +163,120 @@ class Import
                                 import_1c_price where 
                                     id1c not in(select xml_id from catalog_tovar where xml_id>'' and id in(select catalog_tovar from catalog_tovar_currency))",$a,adExecuteNoRecords);
 
-        
-        
+        //грузим остатки
+        $this->connection->Execute("insert catalog_tovar_store (catalog_store,catalog_tovar,quantity)
+                    select 
+                        (select id from catalog_store where xml_id=import_1c_store.import_1c_store_type),
+                        (select id from catalog_tovar where xml_id=import_1c_store.id1c),
+                        quantity
+                            from 
+                                import_1c_store where 
+                                    id1c not in(select t.xml_id from catalog_tovar t, catalog_tovar_store s
+                                        where xml_id>'' and t.id=s.catalog_tovar)
+                                        and id1c in(select xml_id from catalog_tovar)",$a,adExecuteNoRecords);
+
+        //обновим общий остаток товара
+        $this->connection->Execute("update catalog_tovar c , import_1c_tovar i
+                    set c.quantity=i.quantity
+                        where i.id1c=c.xml_id",$a,adExecuteNoRecords);
+
  /* 
-CREATE TABLE `catalog_tovar_currency` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `catalog_tovar` int(11) DEFAULT NULL,
-  `catalog_currency` char(3) DEFAULT NULL COMMENT 'код валюты',
-  `catalog_price_type` int(11) DEFAULT NULL COMMENT 'ID типа цены',
-  `catalog_tovar_sku_properties` int(11) DEFAULT NULL COMMENT 'ID комбинации хар-к или null',
-  `value` decimal(11,2) DEFAULT NULL,
-  `vat_in` int(11) DEFAULT NULL COMMENT '1-НДС включен в цену',
-  `vat_value` decimal(11,2) DEFAULT NULL COMMENT 'значение НДС',
-  PRIMARY KEY (`id`),
 
 
-
-CREATE TABLE `import_1c_price` (
-  `id1c` char(127) NOT NULL COMMENT 'ID товара в 1С',
-  `import_1c_price_type` char(127) DEFAULT NULL COMMENT 'ID типа прайса в 1С',
-  `currency` char(3) DEFAULT NULL,
-  `price` decimal(11,2) DEFAULT NULL COMMENT 'сама цена',
-  KEY `import_1c_price_type` (`import_1c_price_type`),
-  KEY `id1c` (`id1c`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='сами прайсы';
 */
 
     }
     
     /**
     * вызывается перед импортом, если у нас полная замена каталога
+    * возвращает результат, который передается как есть на экран
     */
     public function CatalogTruncate()
     {
         //удалим все свойства товара где указан xml_id (в связных таблицах очистится автоматом, через внешние ключи)
         $this->connection->Execute("delete from catalog_properties where xml_id>''",$a,adExecuteNoRecords);
+        //удалим все фото из каталога
+        $this->ImagesLib->deleteFileRazdel("catalog_tovar_anons");
+        $this->ImagesLib->deleteFileRazdel("catalog_tovar_detal");
+        $this->ImagesLib->deleteFileRazdel("catalog_tovar_gallery");
     }
     
+    
+    /**
+    * обработка по расписанию картинок
+    */
+    public function cron()
+    {
+        set_time_limit(0);
+        $rez=[];
+        $rs=$this->connection->Execute("SELECT AUTO_INCREMENT  FROM information_schema.tables
+                                                WHERE
+                                                  table_name = 'catalog_tovar_gallery'
+                                                  AND table_schema = DATABASE()");
+        $catalog_tovar_gallery_id=$rs->Fields->Item['AUTO_INCREMENT']->Value;
+        $rs->Close();
+        $rs=null;
+        $rsg=new RecordSet();
+        $rsg->CursorType =adOpenKeyset;
+        $rsg->Open("select * from catalog_tovar_gallery limit 1",$this->connection);
+
+        $limit=(int)$this->config["catalog"]["import"]["limit_record_read_attach_files"];
+        $folder=$this->ImagesLib->getSourceFolder();
+        $rs=new RecordSet();
+        $rs->CursorType =adOpenKeyset;
+        $rs->Open("select * from import_1c_file order by import_1c_tovar limit $limit",$this->connection);
+        //весь товар
+        $rst=new RecordSet();
+        $rst->CursorType =adOpenKeyset;
+        $rst->Open("select * from catalog_tovar order by xml_id",$this->connection);
+        
+        while (!$rs->EOF){
+            $rst->Find("xml_id='".$rs->Fields->Item["import_1c_tovar"]->Value."'");
+            $catalog_tovar=$rst->Fields->Item["id"]->Value;
+            $rez[]=$rst->Fields->Item["id"]->Value;
+
+            $flag_def_img=$this->ImagesLib->hasImage("catalog_tovar_anons",$catalog_tovar) ;
+            $f=$rs->Fields->Item["file"]->Value;
+            $file_ext=strtolower(pathinfo($f,PATHINFO_EXTENSION));
+            $file_name=basename($f);
+           
+            if (in_array($file_ext,["jpg","png","jpeg","gif"])){
+                //обработка картинок
+                if (!$flag_def_img){
+                     copy($f,$folder."/".$file_name);
+                    //анонс товара
+                    $this->ImagesLib->selectStorageItem("catalog_tovar_anons");
+                    $this->ImagesLib->saveImages($file_name,"catalog_tovar_anons",$catalog_tovar);
+                    //подробно товар
+                     copy($f,$folder."/".$file_name);
+                    $this->ImagesLib->selectStorageItem("catalog_tovar_detal");
+                    $this->ImagesLib->saveImages($file_name,"catalog_tovar_detal",$catalog_tovar);
+                    $flag_def_img=false;
+                } else {
+                     copy($f,$folder."/".$file_name);
+                    //остальные фото отправляем в фотогалерею
+                    $rsg->AddNew();
+                    $rsg->Fields->Item["catalog_tovar"]->Value=$catalog_tovar;
+                    $rsg->Update();
+                    $this->ImagesLib->selectStorageItem("catalog_tovar_gallery");
+                    $this->ImagesLib->saveImages($file_name,"catalog_tovar_gallery",$rsg->Fields->Item["id"]->Value);
+                }
+            }
+            
+            //костыльный обработчик, длинные описания товара хранятся в BMP файлах
+            if (in_array($file_ext,["bmp"])){
+                $c=file_get_contents($f);
+                $c=mb_convert_encoding($c,"UTF-8","CP1251");
+                $c=nl2br(trim(str_replace("\r","",$c)));
+                $rst->Fields->Item["info"]->Value=$c;
+                $rst->Update();
+            }
+            @unlink($f);
+            $rs->Delete();
+            $rs->Update();
+            $rs->MoveNext();
+        }
+        return $rez;
+    }
     
 }

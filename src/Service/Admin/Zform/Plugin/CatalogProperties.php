@@ -111,6 +111,7 @@ class CatalogProperties extends AbstractPlugin
     {
         $rs=$this->connection->Execute("select * from catalog_properties order by poz");
         $input_filter=[];
+        $rez=[];
 
         $rslist=new RecordSet();
         $rslist->CursorType =adOpenKeyset;

@@ -126,7 +126,7 @@ return [
         "tovar_torg_catalog"=>__DIR__."/admin.tovar_torg_catalog.php",      //торговый каталог (табы)
         "tovar_torg_money"=>__DIR__."/admin.tovar_torg_money.php",          //цена  в торговом каталоге
         "tovar_torg_store"=>__DIR__."/admin.tovar_torg_store.php",          //остатки на складах
-        "tovar_torg_gabarits"=>__DIR__."/admin.tovar_torg_gabarits.php",    //габаритные параметры товара
+        "tovar_torg_dop_parameters"=>__DIR__."/admin.tovar_torg_dop_parameters.php",    //доп. параметры товара
         
     ],
     /*плагины для сетки JqGrid*/
@@ -144,6 +144,7 @@ return [
             Service\Admin\JqGrid\Plugin\GetCategoryTree::class => Service\Admin\JqGrid\Plugin\Factory\GetCategoryTree::class,
             Service\Admin\JqGrid\Plugin\SaveCategory2tovar::class => Service\Admin\JqGrid\Plugin\Factory\SaveCategory2tovar::class,
             Service\Admin\Zform\Plugin\CatalogProperties::class => Service\Admin\Zform\Plugin\Factory\CatalogProperties::class,
+            Service\Admin\Zform\Plugin\CatalogDopProperties::class => Service\Admin\Zform\Plugin\Factory\CatalogDopProperties::class,
             Service\Admin\Zform\Plugin\CatalogPriceType::class => Service\Admin\Zform\Plugin\Factory\CatalogPriceType::class,
         ],
         'aliases' =>[
@@ -158,11 +159,12 @@ return [
         ],
         "default"=>[
             "vat_in" => true,           /*НДС включен в цену товара (по умолчанию, влияет на "крыжик при создании товара")*/
-            "vat_value" => 10,          /*ставка НДС по умолчанию*/
+            "vat_value" => 20,          /*ставка НДС по умолчанию*/
             "currency"=>"RUB",          /*Имя валюты по умолчанию*/
         ],
         "import" =>[
-            "1c_internal" => true       //внутренний обработчик импорта 
+            "1c_internal" => true,               //внутренний обработчик импорта
+            "limit_record_read_attach_files"=>20, //предел кол-ва обрабатываемых записей с файлами за 1 раз
         ],
     ],
     
@@ -228,6 +230,30 @@ return [
                             ],
                 ],
             ],//catalog_tovar_detal
+            "catalog_tovar_gallery"=>[
+                "description"=>"Фотогалерея товара",
+                'file_storage'=>'default',
+                'file_rules'=>[
+                            'admin_img'=>[
+                                'filters'=>[
+                                        CopyToStorage::class => [
+                                                    'folder_level'=>0,
+                                                    'folder_name_size'=>3,
+                                                    'strategy_new_name'=>'md5'
+                                        ],
+                                ],
+                            ],
+                            'anons'=>[
+                                'filters'=>[
+                                        CopyToStorage::class => [
+                                                    'folder_level'=>0,
+                                                    'folder_name_size'=>3,
+                                                    'strategy_new_name'=>'md5'
+                                        ],
+                                ],
+                            ],
+                ],
+            ],//catalog_tovar_gallery
         ],
     ],
 

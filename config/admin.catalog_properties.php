@@ -76,8 +76,9 @@ return [
                 
                 "colModel" => [
                     ColModelHelper::text("id",["label"=>"ID","width"=>80,"editable" => false]),
-                    ColModelHelper::text("name",["label"=>"Имя параметра","width"=>250,"editoptions" => ["size"=>50 ]]),
+                    ColModelHelper::text("name",["label"=>"Имя параметра","width"=>210,"editoptions" => ["size"=>50 ]]),
                     ColModelHelper::text("poz",["label"=>"Порядок","width"=>90,"editoptions" => ["size"=>50 ]]),
+                    ColModelHelper::text("sysname",["label"=>"Системное имя","width"=>120,"editoptions" => ["size"=>50 ]]),
                     ColModelHelper::select("type",
                                            [
                                                "label"=>"Тип поля в админке",
@@ -95,7 +96,7 @@ return [
                     ColModelHelper::interfaces("id",
                                          [
                                              "label"=>"Списки",
-                                             "width"=>160,
+                                             "width"=>100,
                                              "formatoptions" => [
                                                  "items"=>[
                                                     "button1"=> [
