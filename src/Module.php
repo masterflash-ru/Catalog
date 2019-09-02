@@ -22,26 +22,34 @@ public function onBootstrap(MvcEvent $event)
     // объявление слушателя для изменения макета на админский + проверка авторизации root
     $sharedEventManager->attach("Mf", MvcEvent::EVENT_DISPATCH, [$this, 'onDispatch'], 1);
     
-    //смотрим конфигурацию на предмет стандартной обработки загрузки/импорта
+    //смотрим конфигурацию на предмет обработки загрузки/импорта
     $config=$ServiceManager->get("config");
-    if ($config["catalog"]["import"]["1c_internal"]){
+    if ($config["catalog"]["import"]["1c"]["service_import"]){
         //стандартный обработчик загрузки из 1С в каталог после импорта
-        $sharedEventManager->attach("simba.1c", "catalogImportComplete", function(Event $event) use ($ServiceManager){
-            $service=$ServiceManager->build(Service\Import::class);
+        $sharedEventManager->attach("simba.1c", "catalogImportComplete", function(Event $event) use ($ServiceManager,$config){
+            $service=$ServiceManager->build($config["catalog"]["import"]["1c"]["service_import"]);
             return $service->CatalogImport();
         },2);
+
         //стандартный обработчик загрузки из 1С в каталог после импорта
-        $sharedEventManager->attach("simba.1c", "catalogOffersComplete", function(Event $event) use ($ServiceManager){
-            $service=$ServiceManager->build(Service\Import::class);
+        $sharedEventManager->attach("simba.1c", "catalogOffersComplete", function(Event $event) use ($ServiceManager,$config){
+            $service=$ServiceManager->build($config["catalog"]["import"]["1c"]["service_import"]);
             return $service->CatalogOffers();
         },2);
         //стандартный обработчик загрузки из 1С в каталог очистка каталога
-        $sharedEventManager->attach("simba.1c", "catalogTruncate", function(Event $event) use ($ServiceManager){
-            $service=$ServiceManager->build(Service\Import::class);
+        $sharedEventManager->attach("simba.1c", "catalogTruncate", function(Event $event) use ($ServiceManager,$config){
+            $service=$ServiceManager->build($config["catalog"]["import"]["1c"]["service_import"]);
             return $service->CatalogTruncate();
         },2);
-
     }
+    //обработчик дополнительных реквизитов, они индивидуальные, поэтому его нет в стандартной реализации
+    if ($config["catalog"]["import"]["1c"]["service_requisites"]){
+        $sharedEventManager->attach("simba.1c", "catalogTruncate", function(Event $event) use ($ServiceManager,$config){
+            $service=$ServiceManager->build($config["catalog"]["import"]["1c"]["service_requisites"]);
+            return $service->CatalogRequisites();
+        },2);
+    }
+
 }
 
 /*слушатель для проверки авторизован ли админ*/

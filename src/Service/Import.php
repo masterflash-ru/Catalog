@@ -50,7 +50,7 @@ class Import
         /*загружаем/меняем ТОВАР, в таблице import_1c_tovar всегда обновленный товар*/        
         //вначале переименовываем то что есть
         $this->connection->Execute("update catalog_tovar c, import_1c_tovar i
-                set c.name=i.name, c.url=i.url, c.quantity=i.quantity,c.sku=i.sku
+                set c.name=i.name, c.url=i.url, c.quantity=i.quantity,c.sku=i.sku, c.anons=i.name
                     where c.xml_id=i.id1c and (i.status is null or !i.status )",$a,adExecuteNoRecords);
         //удалим старые связи товар-категории
         $this->connection->Execute("delete from catalog_category2tovar
@@ -60,8 +60,8 @@ class Import
         //Новая привязка к категориям будет после добавления новых товаров
         
         //загружаем новый товар
-        $this->connection->Execute("insert into catalog_tovar (xml_id,name,url,info,title,keywords,description,public,poz,quantity,sku)
-                    select id1c,name,url,description,name,name,name,1,0,0,sku
+        $this->connection->Execute("insert into catalog_tovar (xml_id,name,url,info,title,keywords,description,public,poz,quantity,sku,anons)
+                    select id1c,name,url,description,name,name,name,1,0,0,sku,name
                         from import_1c_tovar where (status is null or !status) and id1c not in(select xml_id from catalog_tovar where xml_id>'')",$a,adExecuteNoRecords);
         //привязываем новый товар к категориям
         $this->connection->Execute("insert into catalog_category2tovar (catalog_category, catalog_tovar)
@@ -140,6 +140,15 @@ class Import
         $this->connection->Execute("delete from catalog_tovar 
                                     where xml_id in(select id1c from import_1c_tovar where status='Удален')",$a,adExecuteNoRecords);
         $this->connection->CommitTrans();
+        //при удалении 1С передает и файлы к этому товару, их нужно удалить
+        $rs=new RecordSet();
+        $rs->Open("select * from import_1c_file where import_1c_tovar in(select id1c from import_1c_tovar where status='Удален')",$this->connection);
+        while (!$rs->EOF){
+            @unlink ($rs->Fields->Item["file"]->Value);
+            $rs->MoveNext();
+        }
+        $this->deleteEmptyDir();
+
 
     }
 
@@ -212,6 +221,8 @@ class Import
                         where i.id1c=c.xml_id",$a,adExecuteNoRecords);
         $this->connection->CommitTrans();
 
+        
+
  /* 
 
 
@@ -228,17 +239,29 @@ class Import
         $this->connection->BeginTrans();
         //удалим все свойства товара где указан xml_id (в связных таблицах очистится автоматом, через внешние ключи)
         $this->connection->Execute("delete from catalog_properties where xml_id>''",$a,adExecuteNoRecords);
-        //удалим все фото из каталога
-        $this->ImagesLib->deleteFileRazdel("catalog_tovar_anons");
-        $this->ImagesLib->deleteFileRazdel("catalog_tovar_detal");
-        $this->ImagesLib->deleteFileRazdel("catalog_tovar_gallery");
         //очистим сам каталог товара
         $this->connection->Execute("delete from catalog_tovar where xml_id>''",$a,adExecuteNoRecords);
         $this->connection->CommitTrans();
+        
+        //удалим все фото из каталога, которые отмечены после удаления из catalog_tovar
+        $this->ImagesLib->clearStorage();
         $this->connection->Execute("ALTER TABLE catalog_tovar AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
         $this->connection->Execute("ALTER TABLE catalog_tovar_currency AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
         $this->connection->Execute("ALTER TABLE catalog_tovar_gallery AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
         $this->connection->Execute("ALTER TABLE catalog_tovar_store AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
+    }
+    
+    /**
+    * обработчик дополнительных реквизитов товара
+    * обрабатывает тип "ОписаниеВФорматеHTML"
+    * если он есть, данные записываются в подробное описание товара в поле info таблицы catalog_tovar
+    */
+    public function CatalogRequisites()
+    {
+        $a=0;
+        $this->connection->Execute("update catalog_tovar c, import_1c_requisites i
+                        set c.info=i.value
+                            where c.xml_id=i.import_1c_tovar and i.name='ОписаниеВФорматеHTML'",$a,adExecuteNoRecords);
     }
     
     
@@ -316,7 +339,30 @@ class Import
             $rs->Update();
             $rs->MoveNext();
         }
+        $this->deleteEmptyDir();
         return $rez;
     }
-    
+
+/*
+* обход каталогов с исходными файлами, удаление пустых папок
+*/
+protected function deleteEmptyDir()
+{
+    $folder=$this->config["1c"]["temp1c"];
+        try {
+            $idir = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $folder, \FilesystemIterator::SKIP_DOTS ), \RecursiveIteratorIterator::CHILD_FIRST );
+        }
+        catch (\UnexpectedValueException $e) { return;}
+        
+        foreach( $idir as $v ){
+            if( $v->isDir() and $v->isWritable() ){
+                $f = glob( $idir->key() . '/*.*' );
+                if( empty( $f ) ){
+                    @rmdir( $idir->key() );
+                }
+            }
+        } 
+}
+
+
 }
