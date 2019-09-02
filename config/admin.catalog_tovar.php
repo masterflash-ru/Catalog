@@ -83,7 +83,8 @@ return [
                                     "label"=>"Новый товар с характеристиками"
                                 ],
                                 "attributes"=>[
-                                    "onclick"=>"newTovar(1)",
+                                   // "onclick"=>"newTovar(1)",
+                                    "onclick"=>"alert('Функционал пока не поддерживается, идут работы')",
                                     "class"=>"btn btn-secondary btn-sm",
                                 ]
                             ]),
@@ -95,6 +96,7 @@ return [
                 "colModel" => [
                     ColModelHelper::text("id",["label"=>"ID","width"=>80]),
                     ColModelHelper::text("name",["label"=>"Название товара","width"=>300]),
+                    ColModelHelper::text("sku",["label"=>"Артикул","width"=>150]),
                     ColModelHelper::text("url",["label"=>"URL карточки",
                         "width"=>250,
                        

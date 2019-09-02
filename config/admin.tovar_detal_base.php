@@ -39,6 +39,7 @@ return [
                 "rowModel" => [
                     'elements' => [
                         RowModelHelper::text("name",['options'=>["label"=>"Наименование"]]),
+                        
                         RowModelHelper::text("url",[
                             'options'=>[
                                 "label"=>"URL карточки"
@@ -56,6 +57,7 @@ return [
                                 ],
                             ],
                         ]),
+                        RowModelHelper::text("sku",['options'=>["label"=>"Артикул"]]),
                         RowModelHelper::text("poz",['options'=>["label"=>"Сортировка"]]),
                         RowModelHelper::checkbox("public",['options'=>["label"=>"Публиковать"]]),
                         RowModelHelper::text("xml_id",['options'=>["label"=>"xml_id"]]),

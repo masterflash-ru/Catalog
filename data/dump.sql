@@ -40,7 +40,7 @@ CREATE TABLE `catalog_category` (
   KEY `url` (`url`),
   KEY `public` (`public`),
   KEY `xml_id` (`xml_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='дерево категорий';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='дерево категорий';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -145,7 +145,8 @@ CREATE TABLE `catalog_measure` (
   `symbol_letter_intl` varchar(20) DEFAULT NULL,
   `is_default` tinyint(4) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `code` (`code`)
+  UNIQUE KEY `code` (`code`),
+  KEY `is_default` (`is_default`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='единицы измерения';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -171,7 +172,9 @@ CREATE TABLE `catalog_price_type` (
   `name` char(255) DEFAULT NULL,
   `is_base` int(11) DEFAULT NULL COMMENT 'флаг базовой цены',
   `xml_id` char(127) DEFAULT NULL COMMENT 'связь с 1С',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `is_base` (`is_base`),
+  KEY `xml_id` (`xml_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Типы цен';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -332,6 +335,7 @@ CREATE TABLE `catalog_tovar` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `public` int(11) DEFAULT NULL,
   `xml_id` char(127) DEFAULT NULL,
+  `sku` char(100) DEFAULT NULL COMMENT 'Код артикула',
   `name` char(255) DEFAULT NULL,
   `quantity` int(11) DEFAULT NULL COMMENT 'общий остаток товара',
   `url` char(255) DEFAULT NULL,
@@ -347,8 +351,9 @@ CREATE TABLE `catalog_tovar` (
   KEY `public` (`public`),
   KEY `name` (`name`),
   KEY `new_session` (`new_session`,`new_date`),
-  KEY `xml_id` (`xml_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='сам товар';
+  KEY `xml_id` (`xml_id`),
+  KEY `sku` (`sku`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='сам товар';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -368,7 +373,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50003 TRIGGER `catalog_tovar_before_del_tr` BEFORE DELETE ON `catalog_tovar`
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `catalog_tovar_before_del_tr` BEFORE DELETE ON `catalog_tovar`
   FOR EACH ROW
 BEGIN
 update storage set todelete=1 where razdel='catalog_tovar_gallery' and id in(select id from catalog_tovar_gallery where `catalog_tovar`= OLD.id);
@@ -558,7 +563,7 @@ CREATE TABLE `catalog_tovar_store` (
   CONSTRAINT `catalog_tovar_store_fk` FOREIGN KEY (`catalog_store`) REFERENCES `catalog_store` (`id`) ON DELETE CASCADE,
   CONSTRAINT `catalog_tovar_store_fk1` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
   CONSTRAINT `catalog_tovar_store_fk2` FOREIGN KEY (`catalog_tovar_sku_properties`) REFERENCES `catalog_tovar_sku_properties` (`id_combination`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6570 DEFAULT CHARSET=utf8 COMMENT='склад';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='склад';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -579,4 +584,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-08-30 11:45:54
+-- Dump completed on 2019-09-02 10:35:42

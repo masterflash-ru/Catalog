@@ -26,25 +26,32 @@ class Import
         
         //загружаем новые категории товара, статус 1
         $a=0;
+        $this->connection->BeginTrans();
         //внавале удалим все старые записи из каталога, которые совпадают с импортом и статус =1
         $this->connection->Execute("delete from catalog_category where id in(select id from import_1c_category where flag_change=1)",$a,adExecuteNoRecords);
         $this->connection->Execute("insert into catalog_category (id,subid,level,xml_id,name,url,title,keywords,description,public)
                 select id,subid,level,id1c,name,url,name,name,name,1 from import_1c_category where flag_change=1",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
+        
         /*сбросим флаг новой записи*/
         $this->connection->Execute("update import_1c_category set flag_change=0 where flag_change=1",$a,adExecuteNoRecords);
         
+        $this->connection->BeginTrans();
         //изменение категории, статус=2
         $this->connection->Execute("update catalog_category c,import_1c_category i
                 set c.name=i.name, c.url=i.url, c.title=i.name, c.keywords=i.name, c.description=i.name
                     where i.flag_change=2 and c.id=i.id and c.subid=i.subid and c.level=i.level",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
         /*сбросим флаг новой записи*/
         $this->connection->Execute("update import_1c_category set flag_change=0 where flag_change=2",$a,adExecuteNoRecords);
         
+        
+        $this->connection->BeginTrans();
         /*загружаем/меняем ТОВАР, в таблице import_1c_tovar всегда обновленный товар*/        
         //вначале переименовываем то что есть
         $this->connection->Execute("update catalog_tovar c, import_1c_tovar i
-                set c.name=i.name, c.url=i.url, c.quantity=i.quantity
-                    where c.xml_id=i.id1c",$a,adExecuteNoRecords);
+                set c.name=i.name, c.url=i.url, c.quantity=i.quantity,c.sku=i.sku
+                    where c.xml_id=i.id1c and (i.status is null or !i.status )",$a,adExecuteNoRecords);
         //удалим старые связи товар-категории
         $this->connection->Execute("delete from catalog_category2tovar
                     where catalog_tovar in(select id from catalog_tovar 
@@ -53,16 +60,18 @@ class Import
         //Новая привязка к категориям будет после добавления новых товаров
         
         //загружаем новый товар
-        $this->connection->Execute("insert into catalog_tovar (xml_id,name,url,info,title,keywords,description,public,poz,quantity)
-                    select id1c,name,url,description,name,name,name,1,0,0
-                        from import_1c_tovar where id1c not in(select xml_id from catalog_tovar where xml_id>'')",$a,adExecuteNoRecords);
+        $this->connection->Execute("insert into catalog_tovar (xml_id,name,url,info,title,keywords,description,public,poz,quantity,sku)
+                    select id1c,name,url,description,name,name,name,1,0,0,sku
+                        from import_1c_tovar where (status is null or !status) and id1c not in(select xml_id from catalog_tovar where xml_id>'')",$a,adExecuteNoRecords);
         //привязываем новый товар к категориям
         $this->connection->Execute("insert into catalog_category2tovar (catalog_category, catalog_tovar)
                 select ic.id, t.id
                         from import_1c_category ic,import_1c_tovar it, catalog_tovar t
                             where it.category_id1c=ic.id1c and t.xml_id=it.id1c and t.xml_id>''
                     ",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
 
+        $this->connection->BeginTrans();
         /*работаем со СВОЙСТВАМИ всегда обновление, при полной замене каталога все очищается прежде*/
         //возможное переименование 
         $this->connection->Execute("update catalog_properties c, import_1c_properties i
@@ -97,6 +106,9 @@ class Import
                         from import_1c_tovar_properties
                             where property_list_id not in(select xml_id from catalog_properties where xml_id>'')
                     ",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
+        
+        $this->connection->BeginTrans();
         //загрузка единиц измерения и коэффициенты
         //вначале переименование
         $this->connection->Execute("update catalog_tovar_gabarits g, import_1c_tovar i, catalog_tovar c
@@ -108,7 +120,9 @@ class Import
                     (select id from catalog_tovar where xml_id=import_1c_tovar.id1c)
                     from import_1c_tovar
                         where id1c in(select xml_id from catalog_tovar where id not in(select catalog_tovar from catalog_tovar_gabarits))",$a,adExecuteNoRecords);
-
+        $this->connection->CommitTrans();
+        
+        $this->connection->BeginTrans();
         //бренды загружаем в общие параметры товара с именем "BREND"
         $this->connection->Execute("insert into catalog_properties_list (xml_id,value,catalog_properties)
                 select id1c,name,
@@ -119,6 +133,13 @@ class Import
                                         where xml_id>'' and catalog_properties in(select id from catalog_properties where sysname='BREND')
                                         ) group by id1c
                     ",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
+        
+        $this->connection->BeginTrans();
+        //смотрим удаление товара, удалим при статусе "Удален"
+        $this->connection->Execute("delete from catalog_tovar 
+                                    where xml_id in(select id1c from import_1c_tovar where status='Удален')",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
 
     }
 
@@ -127,6 +148,7 @@ class Import
     */
 	public function CatalogOffers()
     {
+        $this->connection->BeginTrans();
         //загружаем новый тип цен
         $this->connection->Execute("insert into catalog_price_type (xml_id,name,is_base)
                     select id1c,type,0
@@ -138,10 +160,13 @@ class Import
             $this->connection->Execute("update catalog_price_type set is_base=1",$a,adExecuteNoRecords);
         }
         
+        
         //меняем имя, если было изменение
         $this->connection->Execute("update catalog_price_type c, import_1c_price_type i
                     set c.name=i.type where c.xml_id=i.id1c",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
         
+        $this->connection->BeginTrans();
         //типы склада
         $this->connection->Execute("insert into catalog_store (xml_id,name,public)
                     select id1c,type,1
@@ -149,7 +174,9 @@ class Import
         //меняем имя, если было изменение
         $this->connection->Execute("update catalog_store c, import_1c_store_type i
                     set c.name=i.type where c.xml_id=i.id1c",$a,adExecuteNoRecords);
-
+        $this->connection->CommitTrans();
+        
+        $this->connection->BeginTrans();
         //загружаем все цены
         $this->connection->Execute("insert catalog_tovar_currency (catalog_tovar,catalog_currency,catalog_price_type,value,vat_in,vat_value)
                     select 
@@ -162,7 +189,9 @@ class Import
                             from 
                                 import_1c_price where 
                                     id1c not in(select xml_id from catalog_tovar where xml_id>'' and id in(select catalog_tovar from catalog_tovar_currency))",$a,adExecuteNoRecords);
-
+        $this->connection->CommitTrans();
+        
+        $this->connection->BeginTrans();
         //грузим остатки
         $this->connection->Execute("insert catalog_tovar_store (catalog_store,catalog_tovar,quantity)
                     select 
@@ -174,11 +203,14 @@ class Import
                                     id1c not in(select t.xml_id from catalog_tovar t, catalog_tovar_store s
                                         where xml_id>'' and t.id=s.catalog_tovar)
                                         and id1c in(select xml_id from catalog_tovar)",$a,adExecuteNoRecords);
-
+        $this->connection->CommitTrans();
+        
+        $this->connection->BeginTrans();
         //обновим общий остаток товара
         $this->connection->Execute("update catalog_tovar c , import_1c_tovar i
                     set c.quantity=i.quantity
                         where i.id1c=c.xml_id",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
 
  /* 
 
@@ -193,12 +225,20 @@ class Import
     */
     public function CatalogTruncate()
     {
+        $this->connection->BeginTrans();
         //удалим все свойства товара где указан xml_id (в связных таблицах очистится автоматом, через внешние ключи)
         $this->connection->Execute("delete from catalog_properties where xml_id>''",$a,adExecuteNoRecords);
         //удалим все фото из каталога
         $this->ImagesLib->deleteFileRazdel("catalog_tovar_anons");
         $this->ImagesLib->deleteFileRazdel("catalog_tovar_detal");
         $this->ImagesLib->deleteFileRazdel("catalog_tovar_gallery");
+        //очистим сам каталог товара
+        $this->connection->Execute("delete from catalog_tovar where xml_id>''",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
+        $this->connection->Execute("ALTER TABLE catalog_tovar AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
+        $this->connection->Execute("ALTER TABLE catalog_tovar_currency AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
+        $this->connection->Execute("ALTER TABLE catalog_tovar_gallery AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
+        $this->connection->Execute("ALTER TABLE catalog_tovar_store AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
     }
     
     
