@@ -41,12 +41,52 @@ use Mf\Storage\Filter\CopyToStorage;
 use Zend\Validator\File\IsImage;
 use Zend\Validator\File\ImageSize;
 
-
+use Mf\Navigation;
 
 return [
 	//маршруты
     'router' => [
         'routes' => [
+            'catalog' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/catalog',
+                    'defaults' => [
+                        'controller' => Controller\CatalogController::class,
+                        'action'     => 'index',
+                    ],
+                ],
+            ],
+            'catalog_tovar' => [
+                'type' => Segment::class,
+                    'options' => [
+                        'route'    => '/catalog/:catalog/:url',
+                      'constraints' => [
+                            'catalog' => '[a-zA-Z0-9_\-]+',
+                          'url' => '[a-zA-Z0-9_\-]+',
+                      ],
+                        'defaults' => [
+                            'controller' => Controller\CatalogController::class,
+                            'action'     => 'tovar',
+                        ],
+                    ],
+             ],
+            'catalog_list' => [
+                'type' => Segment::class,
+                    'options' => [
+                        'route'    => '/catalog/:catalog[/page/:page]',
+                      'constraints' => [
+                        'url' => '[a-zA-Z0-9_\-]+',
+                          'catalog' => '[a-zA-Z0-9_\-]+',
+                          'page' => '\d+',
+                      ],
+                        'defaults' => [
+                            'controller' => Controller\CatalogController::class,
+                            'action'     => 'list',
+                            "page"=>0
+                        ],
+                    ],
+             ],
             'admin_catalog_new' => [
                 'type' => Literal::class,
                 'options' => [
@@ -72,7 +112,8 @@ return [
 	 
     'service_manager' => [
         'factories' => [//сервисы-фабрики
-             Service\Import::class => Service\Factory\Import::class,
+            Service\Import::class => Service\Factory\Import::class,
+            Service\Catalog::class => Service\Factory\Catalog::class,
         ],
     ],
 
@@ -80,10 +121,19 @@ return [
     'controllers' => [
         'factories' => [
             Controller\AdminController::class => Controller\Factory\AdminControllerFactory::class,
-             Controller\ImportController::class => Controller\Factory\ImportControllerFactory::class,
+            Controller\ImportController::class => Controller\Factory\ImportControllerFactory::class,
+            Controller\CatalogController::class => Controller\Factory\CatalogControllerFactory::class,
         ],
 	],
-    
+    'view_helpers' => [
+        'factories' => [
+            View\Helper\MenuCategory::class => Navigation\View\Helper\Factory\HelperFactory::class,
+        ],
+        'aliases' => [
+            'MenuCategory' =>View\Helper\MenuCategory::class
+        ],
+    ],
+
     'view_manager' => [
         'template_path_stack' => [
             __DIR__ . '/../view',
@@ -100,7 +150,6 @@ return [
             ],
         ],
     ],
-
     /*доступ к панели управления*/
     "permission"=>[
         "objects" =>[
@@ -198,7 +247,7 @@ return [
                                         ],
                                 ],
                             ],
-                            'anons'=>[
+                            'img'=>[
                                 'filters'=>[
                                         CopyToStorage::class => [
                                                     'folder_level'=>0,
@@ -222,7 +271,7 @@ return [
                                         ],
                                 ],
                             ],
-                            'anons'=>[
+                            'img'=>[
                                 'filters'=>[
                                         CopyToStorage::class => [
                                                     'folder_level'=>0,
@@ -246,7 +295,7 @@ return [
                                         ],
                                 ],
                             ],
-                            'anons'=>[
+                            'img'=>[
                                 'filters'=>[
                                         CopyToStorage::class => [
                                                     'folder_level'=>0,

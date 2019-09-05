@@ -1,0 +1,52 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/Главная">Главная</a></li>
+    <li class="breadcrumb-item"><a href="/catalog">Каталог</a></li>
+    <?php
+      for($i=count($this->breadcrumb["name"])-1;$i>0;$i--) {;
+          ?>
+    <li class="breadcrumb-item"><a href="/catalog/<?=$this->breadcrumb["url"][$i]?>"><?=$this->breadcrumb["name"][$i]?></a></li>
+        <?php
+      }
+    ?>
+    <li class="breadcrumb-item active" aria-current="page"><?=$this->node->getname(); ?></li>
+  </ol>
+</nav>
+<?php
+//\Zend\Debug\Debug::dump($this->info);
+
+
+$this->headTitle($this->info->getTitle());
+$this->headMeta()->appendName('keywords', $this->info->getKeywords());
+$this->headMeta()->appendName('description', $this->info->getDescription());
+?>
+        <div class="row tovar-detal pt-4">
+            <div class="col-xs-12 col-sm-6 mb-4">
+                <img class="d-block" src="<?=$this->ImageStorage("catalog_tovar_detal",$this->info->getId(),"img","/img/no_photo.jpg");?>" alt="" />
+
+                </div>
+            <div class="col-xs-12 col-sm-6 pb-4">
+                <h1><?=$this->info->getName();?></h1>
+
+                <div class="pt-3 pb-3 tovar-list-brend"><span class="font-weight-bold text-primary">Артикул: </span>
+                    <?=$this->info->getSku()?>
+                </div>
+                </div>
+        </div>
+         <p class="text-body"><?=$this->info->getInfo();?></p>
+<h2>Параметры товара:</h2>
+<?php
+//\Zend\Debug\Debug::dump($this->parameters);
+?>
+<table class="table">
+<?php
+foreach ($this->parameters as $p){
+?>
+<tr>
+    <td><?=$p->getproperties_name()?></td>
+    <td><?=unserialize($p->getvalue())?></td>
+    </tr>
+<?php
+}
+?>
+    </table>

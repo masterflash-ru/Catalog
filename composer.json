@@ -12,7 +12,9 @@
     "require": {
         "php": "^7.1",
         "masterflash-ru/ado": "^2.0",
-        "masterflash-ru/storage": "^1.1"
+        "masterflash-ru/storage": "^1.1",
+        "zendframework/zend-paginator": "^2.7",
+        "zendframework/zend-cache": "^2.7"
     },
     "autoload": {
         "psr-4": {

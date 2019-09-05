@@ -44,7 +44,7 @@ public function onBootstrap(MvcEvent $event)
     }
     //обработчик дополнительных реквизитов, они индивидуальные, поэтому его нет в стандартной реализации
     if ($config["catalog"]["import"]["1c"]["service_requisites"]){
-        $sharedEventManager->attach("simba.1c", "catalogTruncate", function(Event $event) use ($ServiceManager,$config){
+        $sharedEventManager->attach("simba.1c", "catalogImportComplete", function(Event $event) use ($ServiceManager,$config){
             $service=$ServiceManager->build($config["catalog"]["import"]["1c"]["service_requisites"]);
             return $service->CatalogRequisites();
         },2);

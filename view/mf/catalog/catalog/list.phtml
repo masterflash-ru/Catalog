@@ -1,0 +1,98 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/Главная">Главная</a></li>
+    <li class="breadcrumb-item"><a href="/catalog">Каталог</a></li>
+    <?php
+      for($i=count($this->breadcrumb["name"])-1;$i>0;$i--) {;
+          ?>
+    <li class="breadcrumb-item"><a href="/catalog/<?=$this->breadcrumb["url"][$i]?>"><?=$this->breadcrumb["name"][$i]?></a></li>
+        <?php
+      }
+    ?>
+    <li class="breadcrumb-item active" aria-current="page"><?=$this->node->getname(); ?></li>
+  </ol>
+</nav>
+<h1><?=$this->node->getname(); ?></h1>
+<?=$this->node->getinfo();?>
+
+
+<?php if ($this->nodes){echo '<br><div class="h2 text-primary">Еще разделы товара:</div>';}?>
+<div class="card-group">
+<?php
+$this->headTitle($this->node->GetTitle());
+$this->headMeta()->appendName('keywords', $this->node->GetKeywords());
+$this->headMeta()->appendName('description', $this->node->GetDescription() );
+//\Zend\Debug\Debug::dump($this->breadcrumb);
+//список подузлов
+foreach ($this->nodes as $_node){
+    if (!$_node->geturl()) {$_node->seturl("#");}
+?>
+  <div class="card">
+      <a href="<?=$this->url("catalog_list",["catalog"=>$_node->geturl()]);?>">
+    <img class="card-img-top p-2 " src="<?=$this->ImageStorage("catalog_category",$_node->getId(),"img","/img/no_photo.jpg");?>" alt="">
+    <div class="card-body"><?=$_node->getname(); ?></div>
+      </a>
+  </div>
+<?php
+	}
+?>
+
+</div>
+
+<br/><br/>
+
+
+<?php
+
+$items=$this->pagination;
+if ($this->pagination->count()>0) {
+    echo '<div class="h2 text-primary">Товар:</div>';
+} else {
+   // $this->headMeta()->appendName('robots', "noindex" );
+}
+?>
+<div class="card-group">
+<?php 
+foreach ($items as $item){
+    //\Zend\Debug\Debug::dump($item);
+    /*if ($item->getInfo()){
+        $url=$this->url("catalog_tovar",["url"=>$item->getUrl(),"catalog"=>$this->node->geturl()]);
+    } else {
+        $url="#";
+    }*/
+    $url=$this->url("catalog_tovar",["url"=>$item->getUrl(),"catalog"=>$this->node->geturl()]);
+?>
+  <div class="card">
+      <a href="<?=$url;?>" class="d-block tovar-list m-2" style="background-image: url(<?=$this->ImageStorage("catalog_tovar_anons",$item->getId(),"img","/img/no_photo.jpg");?>)">
+          </a>
+    
+      <div class="card-body">
+<a href="<?=$url;?>">
+      <p class="card-tex text-body card-tech">
+          <span class="text-primary font-weight-bold">Артикул:</span> <?=$item->getSku();?><br> 
+          <span class="text-primary font-weight-bold">Родительский артикул:</span> <?=$item->getPSku();?>
+          <br><?=$item->getName();?></p>
+    </a>
+    </div>
+      
+  </div>
+<?php
+}
+?>
+</div>
+
+<br><br>
+<?php
+
+echo $this->Pagination($this->pagination,[
+           "bootstrap4"=>[
+               "RouteNamePageStart" =>'catalog_list',
+               "RouteNamePages"=>'catalog_list',
+               "RouteValues"=>["catalog"=>$this->node->getUrl()],
+               "ScrollingStyle"=>"Sliding"
+           ]
+       ])
+
+?>
+
+

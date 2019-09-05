@@ -4,7 +4,7 @@ namespace Mf\Catalog\Service;
 use Exception;
 use ADO\Service\RecordSet;
 
-class Import 
+class Import
 {
     protected $connection;
     protected $ImagesLib;
@@ -245,10 +245,13 @@ class Import
         
         //удалим все фото из каталога, которые отмечены после удаления из catalog_tovar
         $this->ImagesLib->clearStorage();
+        $this->connection->BeginTrans();
+        $a=0;
         $this->connection->Execute("ALTER TABLE catalog_tovar AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
         $this->connection->Execute("ALTER TABLE catalog_tovar_currency AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
         $this->connection->Execute("ALTER TABLE catalog_tovar_gallery AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
         $this->connection->Execute("ALTER TABLE catalog_tovar_store AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
+        $this->connection->CommitTrans();
     }
     
     /**
@@ -302,6 +305,15 @@ class Import
             $f=$rs->Fields->Item["file"]->Value;
             $file_ext=strtolower(pathinfo($f,PATHINFO_EXTENSION));
             $file_name=basename($f);
+
+            //проверим на возможную ошибку
+            if (!is_readable($f)){
+                $rs->Delete();
+                $rs->Update();
+                $rs->MoveNext();
+                @unlink($f);
+                continue;
+            }
            
             if (in_array($file_ext,["jpg","png","jpeg","gif"])){
                 //обработка картинок
