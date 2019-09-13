@@ -245,13 +245,11 @@ class Import
         
         //удалим все фото из каталога, которые отмечены после удаления из catalog_tovar
         $this->ImagesLib->clearStorage();
-        $this->connection->BeginTrans();
         $a=0;
-        $this->connection->Execute("ALTER TABLE catalog_tovar AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
-        $this->connection->Execute("ALTER TABLE catalog_tovar_currency AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
-        $this->connection->Execute("ALTER TABLE catalog_tovar_gallery AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
-        $this->connection->Execute("ALTER TABLE catalog_tovar_store AUTO_INCREMENT = 1",$a,adExecuteNoRecords);
-        $this->connection->CommitTrans();
+        $this->connection->Execute("ALTER TABLE catalog_tovar AUTO_INCREMENT=1",$a,adExecuteNoRecords);
+        $this->connection->Execute("ALTER TABLE catalog_tovar_currency AUTO_INCREMENT=1",$a,adExecuteNoRecords);
+        $this->connection->Execute("ALTER TABLE catalog_tovar_gallery AUTO_INCREMENT=1",$a,adExecuteNoRecords);
+        $this->connection->Execute("ALTER TABLE catalog_tovar_store AUTO_INCREMENT=1",$a,adExecuteNoRecords);
     }
     
     /**
