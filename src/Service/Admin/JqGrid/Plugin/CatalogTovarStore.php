@@ -44,15 +44,9 @@ array(7) {
             $rs->Find("id={$quantity_id}");
         }
         $rs->Fields->Item["catalog_store"]->Value=(int)$postParameters["catalog_store"];
-        $rs->Fields->Item["xml_id"]->Value=$postParameters["xml_id"];
         $rs->Fields->Item["quantity"]->Value=(int)$postParameters["quantity"];
         $rs->Fields->Item["catalog_tovar"]->Value=$tovar_id;
         $rs->Fields->Item["catalog_store"]->Value=(int)$postParameters["catalog_store"];
         $rs->Update();
-
-        
     }
-
-
-
 }
