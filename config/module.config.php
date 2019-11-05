@@ -201,6 +201,10 @@ return [
     ],
     
     "catalog"=>[
+        "config"=>[
+            "database"  =>  "DefaultSystemDb",
+            "cache"     =>  "DefaultSystemCache",
+        ],
         "vat_values"=>[
             /*ставки НДС в %*/
             20 => "20 %",
