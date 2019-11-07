@@ -81,12 +81,13 @@ class Import
                              else 'text' end)
                                 where c.xml_id=i.id1c",$a,adExecuteNoRecords);
         //доабвим новые, если их не было
-        $this->connection->Execute("insert into catalog_properties (name,xml_id,type,widget)
+        $this->connection->Execute("insert into catalog_properties (name,xml_id,type,widget,public)
                 select name,id1c,(case type when 'voc' then 'select'
                     		when 'str' then 'text'
                             when 'int' then 'text'
                              else 'text' end),
-                             'MultiCheckbox'
+                             'MultiCheckbox',
+                             1
                         from import_1c_properties
                             where id1c not in(select xml_id from catalog_properties where xml_id>'') group by id1c
                     ",$a,adExecuteNoRecords);
