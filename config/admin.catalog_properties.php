@@ -82,7 +82,7 @@ return [
                     ColModelHelper::select("type",
                                            [
                                                "label"=>"Тип поля в админке",
-                                               "width"=>250,
+                                               "width"=>200,
                                                "editoptions"=>[
                                                    "value"=>[
                                                        "text"=>"Однострочный ввод",
@@ -90,6 +90,18 @@ return [
                                                        "select"=>"Выпадающий список",
                                                        "MultiCheckbox"=>"Массив чекбоксов",
                                                        "Radio"=>"Массив радиокнопок",
+                                                   ]
+                                               ],
+                                           ]),
+                    ColModelHelper::select("widget",
+                                           [
+                                               "label"=>"Тип поля в фильтре",
+                                               "width"=>200,
+                                               "editoptions"=>[
+                                                   "value"=>[
+                                                       "MultiCheckbox"=>"Массив чекбоксов",
+                                                       "Radio"=>"Массив радиокнопок",
+                                                       "select"=>"Выпадающий список",
                                                    ]
                                                ],
                                            ]),

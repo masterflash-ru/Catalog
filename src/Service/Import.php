@@ -81,11 +81,12 @@ class Import
                              else 'text' end)
                                 where c.xml_id=i.id1c",$a,adExecuteNoRecords);
         //доабвим новые, если их не было
-        $this->connection->Execute("insert into catalog_properties (name,xml_id,type)
+        $this->connection->Execute("insert into catalog_properties (name,xml_id,type,widget)
                 select name,id1c,(case type when 'voc' then 'select'
                     		when 'str' then 'text'
                             when 'int' then 'text'
-                             else 'text' end)
+                             else 'text' end),
+                             'MultiCheckbox'
                         from import_1c_properties
                             where id1c not in(select xml_id from catalog_properties where xml_id>'') group by id1c
                     ",$a,adExecuteNoRecords);
@@ -236,16 +237,24 @@ class Import
     */
     public function CatalogTruncate()
     {
+        $a=0;
         $this->connection->BeginTrans();
-        //удалим все свойства товара где указан xml_id (в связных таблицах очистится автоматом, через внешние ключи)
-        $this->connection->Execute("delete from catalog_properties where xml_id>''",$a,adExecuteNoRecords);
+        if ($this->config["catalog"]["import"]["clear_catalog_properties_sql_full_reload"]){
+            //удалим все свойства товара как описано в конфиге (в связных таблицах очистится автоматом, через внешние ключи)
+            if (is_string($this->config["catalog"]["import"]["clear_catalog_properties_sql_full_reload"])){
+                $where="where ".$this->config["catalog"]["import"]["clear_catalog_properties_sql_full_reload"];
+            } else {
+                $where="";
+            }
+            $this->connection->Execute("delete from catalog_properties {$where}",$a,adExecuteNoRecords);
+        }
         //очистим сам каталог товара
         $this->connection->Execute("delete from catalog_tovar where xml_id>''",$a,adExecuteNoRecords);
         $this->connection->CommitTrans();
         
         //удалим все фото из каталога, которые отмечены после удаления из catalog_tovar
         $this->ImagesLib->clearStorage();
-        $a=0;
+        
         $this->connection->Execute("ALTER TABLE catalog_tovar AUTO_INCREMENT=1",$a,adExecuteNoRecords);
         $this->connection->Execute("ALTER TABLE catalog_tovar_currency AUTO_INCREMENT=1",$a,adExecuteNoRecords);
         $this->connection->Execute("ALTER TABLE catalog_tovar_gallery AUTO_INCREMENT=1",$a,adExecuteNoRecords);

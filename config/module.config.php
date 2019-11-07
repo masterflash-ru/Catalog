@@ -216,11 +216,13 @@ return [
             "currency"=>"RUB",          /*Имя валюты по умолчанию*/
         ],
         "import" =>[
-            "1c" => [                                        //опции импорта из 1С
-                "service_import"=> Service\Import::class,    //обработчик импорта из 1С, если он не нужен, укажите false
-                "service_requisites"=>Service\Import::class, //обработчик доп.реквизитов товара - это очень индивидуально, сильно зависит от настроек 1С
+            "1c" => [                                           //опции импорта из 1С
+                "service_import"=> Service\Import::class,       //обработчик импорта из 1С, если он не нужен, укажите false
+                "service_requisites"=>Service\Import::class,    //обработчик доп.реквизитов товара - это очень индивидуально, сильно зависит от настроек 1С
             ],
-            "limit_record_read_attach_files"=>220,           //предел кол-ва обрабатываемых записей с файлами за 1 раз
+            "limit_record_read_attach_files"=>220,              //предел кол-ва обрабатываемых записей с файлами за 1 раз
+            //очищать общие параметры товара при полной перезагрузке каталога в виде SQL или false,true или строка к SQL (например, xml_id>'' and (sysname is null or sysname=''))
+            "clear_catalog_properties_sql_full_reload"=>"xml_id>'' and (sysname is null or sysname='')",  
         ],
     ],
     
