@@ -137,7 +137,7 @@ class CatalogPriceType extends AbstractPlugin
         $rs=$this->connection->Execute("select * from catalog_price_type  order by is_base desc, name asc");
         $input_filter=[];
         $vat_values=$this->config["catalog"]["vat_values"];
-
+        $rez=[];
         while (!$rs->EOF){
             $rez[]=RowModelHelper::caption(null,[
                 'options'=>[
