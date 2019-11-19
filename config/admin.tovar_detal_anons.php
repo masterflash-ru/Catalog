@@ -46,7 +46,7 @@ return [
                                                       "read"=>[
                                                           "Images" =>[
                                                               "storage_item_name" => "catalog_tovar_anons", //имя секции в хранилище
-                                                              "storage_item_rule_name"=>"admin_img"         //имя правила из хранилища
+                                                              "storage_item_rule_name"=>"img"         //имя правила из хранилища
                                                           ],
                                                       ],
                                                       "edit"=>[

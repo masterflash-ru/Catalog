@@ -19,7 +19,7 @@ return [
             /*все что касается чтения в таблицу*/
             "read"=>[
                 "TreeAdjacency"=>[//плагин выборки из базы
-                    "sql"=>"select t.*,
+                    "sql"=>"select t.*,id as img,
                         (not EXISTS(select id from catalog_category as st where st.subid=t.id)) as isLeaf
                             from catalog_category as t where subid=:nodeid",
                     "interface_name"=>"catalog_category",
@@ -125,6 +125,33 @@ return [
                                                     ],
                                                 ],
                                                   ]),
+                        ColModelHelper::image("img",
+                                              [
+                                                  'options'=>["label"=>"Фото узла"],
+                                                  "plugins"=>[
+                                                      "read"=>[
+                                                          "Images" =>[
+                                                              "storage_item_name" => "catalog_category", //имя секции в хранилище
+                                                              "storage_item_rule_name"=>"img"         //имя правила из хранилища
+                                                          ],
+                                                      ],
+                                                      "edit"=>[
+                                                          "Images"=>[
+                                                              "storage_item_name" => "catalog_category",              //имя секции в хранилище
+                                                              "image_id"=>"id"
+                                                          ],
+                                                      ],
+                                                       "add"=>[
+                                                           "Images" =>[
+                                                               "storage_item_name" => "catalog_category",
+                                                               "database_table_name"=>"catalog_category",
+                                                               "image_id"=>"id"
+                                                           ],
+                                                       ],
+
+                                                  ],
+                                              ]),
+
                     ColModelHelper::ckeditor("info",[
                         "label"=>"Подробно категория",
                         "plugins"=>[

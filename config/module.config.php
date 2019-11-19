@@ -164,6 +164,8 @@ return [
         "catalog_properties_list"=>__DIR__."/admin.catalog_properties_list.php",      //общие параметры списки
         "catalog_price_type" => __DIR__."/admin.catalog_price_type.php",     //типы цен
         
+        "catalog_tovar_gallery" => __DIR__."/admin.tovar_gallery.php",     //фотогалерея товара
+        "tovar_catalog_gallery"=>__DIR__."/admin.tovar_catalog_gallery.php", //сама галерея
         "catalog_tovar"=>__DIR__."/admin.catalog_tovar.php",                //список всех товаров
         "tovar_detal"=>__DIR__."/admin.tovar_detal.php",                    //табы для редактирвоания товара
         "tovar_detal_base"=>__DIR__."/admin.tovar_detal_base.php",          //базовая информация

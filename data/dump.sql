@@ -201,9 +201,12 @@ CREATE TABLE `catalog_properties` (
   `type` char(20) DEFAULT NULL COMMENT 'тип:str,voc',
   `poz` int(11) DEFAULT '0',
   `sysname` char(50) DEFAULT NULL COMMENT 'системное имя поля',
+  `public` int(11) DEFAULT NULL,
+  `widget` char(50) DEFAULT NULL COMMENT 'тип поля в фильтре сайта',
   PRIMARY KEY (`id`),
   KEY `xml_id` (`xml_id`),
-  KEY `sysname` (`sysname`)
+  KEY `sysname` (`sysname`),
+  KEY `public` (`public`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='справочник характеристик товара';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -466,6 +469,7 @@ DROP TABLE IF EXISTS `catalog_tovar_gallery`;
 CREATE TABLE `catalog_tovar_gallery` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `catalog_tovar` int(11) DEFAULT NULL,
+    `poz` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `catalog_tovar` (`catalog_tovar`),
   CONSTRAINT `catalog_tovar_gallery_fk` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE
