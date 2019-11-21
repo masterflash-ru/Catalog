@@ -25,6 +25,10 @@ return [
             "edit"=>[
                 Service\Admin\JqGrid\Plugin\SaveCategory2tovar::class=>[//запись внутри все есть
                 ],
+                "cache" =>[
+                    "tags"=>["catalog_tovar"],
+                    "keys"=>["catalog_tovar"],
+                ],
             ],
             
             /*поведение формы*/
