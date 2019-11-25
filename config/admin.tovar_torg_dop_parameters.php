@@ -20,6 +20,11 @@ return [
             ],
             "edit"=>[
                 Service\Admin\Zform\Plugin\CatalogDopProperties::class=>[],
+                "cache" =>[
+                    "tags"=>["catalog_tovar_gabarits"],
+                    "keys"=>["catalog_tovar_gabarits"],
+                ],
+
             ],
             
             /*поведение формы*/

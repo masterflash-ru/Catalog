@@ -50,6 +50,10 @@ return [
                     "sql"=>"select * from catalog_price_type",
                     "PrimaryKey"=>"id",
                 ],
+                "cache" =>[
+                    "tags"=>["catalog_price_type"],
+                    "keys"=>["catalog_price_type"],
+                ],
             ],
             //удаление записи
             "del"=>[

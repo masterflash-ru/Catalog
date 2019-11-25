@@ -27,6 +27,11 @@ return [
                 "db"=>[//плагин выборки из базы
                     "sql"=>"select * from catalog_tovar",  
                 ],
+                "cache" =>[
+                    "tags"=>["catalog_tovar"],
+                    "keys"=>["catalog_tovar"],
+                ],
+
             ],
             
             /*поведение формы*/

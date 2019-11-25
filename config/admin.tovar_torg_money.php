@@ -19,7 +19,12 @@ return [
                 Service\Admin\Zform\Plugin\CatalogPriceType::class=>[],
             ],
             "edit"=>[
-                Service\Admin\Zform\Plugin\CatalogPriceType::class=>[]
+                Service\Admin\Zform\Plugin\CatalogPriceType::class=>[],
+                "cache" =>[
+                    "tags"=>["catalog_price_type","catalog_tovar_currency"],
+                    "keys"=>["catalog_price_type","catalog_tovar_currency"],
+                ],
+
             ],
             
             /*поведение формы*/

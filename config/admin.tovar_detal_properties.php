@@ -22,6 +22,11 @@ return [
             ],
             "edit"=>[
                 Service\Admin\Zform\Plugin\CatalogProperties::class=>[],
+                "cache" =>[
+                    "tags"=>["catalog_tovar_properties"],
+                    "keys"=>["catalog_tovar_properties"],
+                ],
+
             ],
             
             /*поведение формы*/

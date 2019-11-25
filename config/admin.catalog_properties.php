@@ -43,6 +43,11 @@ return [
                     "sql"=>"select * from catalog_properties",
                     "PrimaryKey"=>"id",
                 ],
+                "cache" =>[
+                    "tags"=>["catalog_properties"],
+                    "keys"=>["catalog_properties"],
+                ],
+
             ],
             //удаление записи
             "del"=>[
