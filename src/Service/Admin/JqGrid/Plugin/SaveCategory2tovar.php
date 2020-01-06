@@ -4,7 +4,7 @@
 namespace Mf\Catalog\Service\Admin\JqGrid\Plugin;
 
 use Admin\Service\Zform\Plugin\AbstractPlugin;
-use Zend\Form\FormInterface;
+use Laminas\Form\FormInterface;
 use ADO\Service\RecordSet;
 
 class SaveCategory2tovar extends AbstractPlugin
@@ -41,8 +41,8 @@ class SaveCategory2tovar extends AbstractPlugin
             }
         }
         $this->connection->CommitTrans();
-        //\Zend\Debug\Debug::dump($postParameters);
-        //\Zend\Debug\Debug::dump($getParameters);
+        //\Laminas\Debug\Debug::dump($postParameters);
+        //\Laminas\Debug\Debug::dump($getParameters);
     }
 
 

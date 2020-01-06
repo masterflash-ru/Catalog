@@ -5,10 +5,10 @@
 
 namespace Mf\Catalog\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\JsonModel;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\View\Model\JsonModel;
 use ADO\Service\RecordSet;
-use Zend\Session\Container;
+use Laminas\Session\Container;
 use Exception;
 
 class AdminController extends AbstractActionController

@@ -9,8 +9,8 @@ use ADO\Service\Command;
 use Mf\Catalog\Entity\Catalog as CatalogNode;
 use Mf\Catalog\Entity\Tovar;
 use Mf\Catalog\Entity\Properties;
-use Zend\Paginator\Adapter;
-use Zend\Paginator\Paginator;
+use Laminas\Paginator\Adapter;
+use Laminas\Paginator\Paginator;
 
     
 class Catalog

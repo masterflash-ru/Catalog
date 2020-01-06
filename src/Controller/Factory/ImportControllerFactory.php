@@ -2,7 +2,7 @@
 namespace Mf\Catalog\Controller\Factory;
 
 use Interop\Container\ContainerInterface;
-use Zend\ServiceManager\Factory\FactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Mf\Catalog\Service\Import;
 
 

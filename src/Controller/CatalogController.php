@@ -4,8 +4,8 @@
 
 namespace Mf\Catalog\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\View\Model\ViewModel;
 use ADO\Service\RecordSet;
 use ADO\Service\Command;
 

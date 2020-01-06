@@ -4,7 +4,7 @@
 namespace Mf\Catalog\Service\Admin\JqGrid\Plugin;
 
 use Admin\Service\Zform\Plugin\AbstractPlugin;
-use Zend\Form\FormInterface;
+use Laminas\Form\FormInterface;
 use ADO\Service\RecordSet;
 
 class GetCategoryTree extends AbstractPlugin

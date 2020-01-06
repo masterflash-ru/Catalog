@@ -7,10 +7,10 @@
 namespace Mf\Catalog\View\Helper;
 
 //use Mf\Navigation\View\Helper\Menu as MfMenu;
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 use ADO\Service\RecordSet;
-use Zend\Navigation\Service\ConstructedNavigationFactory;
-use Zend\Navigation\Navigation as ZFNavigation;
+use Laminas\Navigation\Service\ConstructedNavigationFactory;
+use Laminas\Navigation\Navigation as ZFNavigation;
 use Mf\Navigation;
 use Exception;
 use RecursiveArrayIterator;
@@ -28,7 +28,7 @@ class MenuCategory extends AbstractHelper
     protected $_default=[
         "zf3"=>[ /*параметры для меню стандарта ZF3*/
             "locale"=>"ru_RU",               //имя локали
-            "ulClass"=>"navigation",         //класс для ul элемента (сдля стандартного ZEND меню)
+            "ulClass"=>"navigation",         //класс для ul элемента (сдля стандартного Laminas меню)
             "indent"=>"",
             "minDepth"=>1,                   //минимальный уровень вывода
             "maxDepth"=>null,                //максимальный уровень

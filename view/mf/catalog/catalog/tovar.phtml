@@ -13,7 +13,7 @@
   </ol>
 </nav>
 <?php
-//\Zend\Debug\Debug::dump($this->info);
+//\Laminas\Debug\Debug::dump($this->info);
 
 
 $this->headTitle($this->info->getTitle());
@@ -36,7 +36,7 @@ $this->headMeta()->appendName('description', $this->info->getDescription());
          <p class="text-body"><?=$this->info->getInfo();?></p>
 <h2>Параметры товара:</h2>
 <?php
-//\Zend\Debug\Debug::dump($this->parameters);
+//\Laminas\Debug\Debug::dump($this->parameters);
 ?>
 <table class="table">
 <?php

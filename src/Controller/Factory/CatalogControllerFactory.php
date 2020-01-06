@@ -3,7 +3,7 @@
 namespace Mf\Catalog\Controller\Factory;
 
 use Interop\Container\ContainerInterface;
-use Zend\Form\View\Helper\FormElement;
+use Laminas\Form\View\Helper\FormElement;
 use Mf\Catalog\Service\Catalog;
 
 

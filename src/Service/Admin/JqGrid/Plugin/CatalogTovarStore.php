@@ -31,7 +31,7 @@ array(7) {
     */
     public function iedit(array $postParameters)
     {
-        //\Zend\Debug\Debug::dump($postParameters);
+        //\Laminas\Debug\Debug::dump($postParameters);
         $tovar_id=(int)$postParameters["tovar_id"];
         $quantity_id=(int)$postParameters["quantity_id"];
         

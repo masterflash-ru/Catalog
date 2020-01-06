@@ -3,8 +3,8 @@
  */
 namespace Mf\Catalog;
 
-use Zend\Mvc\MvcEvent;
-use Zend\EventManager\Event;
+use Laminas\Mvc\MvcEvent;
+use Laminas\EventManager\Event;
 
 class Module
 {

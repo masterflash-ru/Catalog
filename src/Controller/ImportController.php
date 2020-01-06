@@ -5,8 +5,8 @@
 
 namespace Mf\Catalog\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\JsonModel;
+use Laminas\Mvc\Controller\AbstractActionController;
+use Laminas\View\Model\JsonModel;
 use Exception;
 
 class ImportController extends AbstractActionController

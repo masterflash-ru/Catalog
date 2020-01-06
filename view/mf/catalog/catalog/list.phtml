@@ -22,7 +22,7 @@
 $this->headTitle($this->node->GetTitle());
 $this->headMeta()->appendName('keywords', $this->node->GetKeywords());
 $this->headMeta()->appendName('description', $this->node->GetDescription() );
-//\Zend\Debug\Debug::dump($this->breadcrumb);
+//\Laminas\Debug\Debug::dump($this->breadcrumb);
 //список подузлов
 foreach ($this->nodes as $_node){
     if (!$_node->geturl()) {$_node->seturl("#");}
@@ -54,7 +54,7 @@ if ($this->pagination->count()>0) {
 <div class="card-group">
 <?php 
 foreach ($items as $item){
-    //\Zend\Debug\Debug::dump($item);
+    //\Laminas\Debug\Debug::dump($item);
     /*if ($item->getInfo()){
         $url=$this->url("catalog_tovar",["url"=>$item->getUrl(),"catalog"=>$this->node->geturl()]);
     } else {

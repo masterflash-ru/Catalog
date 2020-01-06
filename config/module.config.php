@@ -1,8 +1,8 @@
 <?php
 namespace Mf\Catalog;
 
-use Zend\Router\Http\Literal;
-use Zend\Router\Http\Segment;
+use Laminas\Router\Http\Literal;
+use Laminas\Router\Http\Segment;
 
 /*адаптеры ресайза*/
 use Mf\Imglib\Filter\Adapter\Gd;
@@ -38,8 +38,8 @@ use Mf\Imglib\Filter\ImgAlternative;
 /*фильтр копировщик файлов в хранилище*/
 use Mf\Storage\Filter\CopyToStorage;
 
-use Zend\Validator\File\IsImage;
-use Zend\Validator\File\ImageSize;
+use Laminas\Validator\File\IsImage;
+use Laminas\Validator\File\ImageSize;
 
 use Mf\Navigation;
 
