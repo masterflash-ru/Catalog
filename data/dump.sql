@@ -205,6 +205,7 @@ CREATE TABLE `catalog_properties` (
   `widget` char(50) DEFAULT NULL COMMENT 'тип поля в фильтре сайта',
   PRIMARY KEY (`id`),
   KEY `xml_id` (`xml_id`),
+    KEY `widget` (`widget`),
   KEY `sysname` (`sysname`),
   KEY `public` (`public`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='справочник характеристик товара';
@@ -496,7 +497,7 @@ CREATE TABLE `catalog_tovar_properties` (
   `catalog_tovar` int(11) DEFAULT NULL,
   `catalog_properties_list` int(11) DEFAULT NULL,
   `catalog_properties` int(11) DEFAULT NULL,
-  `value` varchar(4000) DEFAULT NULL,
+  `value` varchar(512) DEFAULT NULL,
   KEY `catalog_tovar` (`catalog_tovar`),
   KEY `catalog_properties_list` (`catalog_properties_list`),
   KEY `catalog_properties` (`catalog_properties`),
@@ -514,6 +515,28 @@ LOCK TABLES `catalog_tovar_properties` WRITE;
 /*!40000 ALTER TABLE `catalog_tovar_properties` DISABLE KEYS */;
 /*!40000 ALTER TABLE `catalog_tovar_properties` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+DROP TABLE IF EXISTS `catalog_tovar_properties_array`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `catalog_tovar_properties_array` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `catalog_tovar` int(11) DEFAULT NULL,
+  `catalog_properties_list` int(11) DEFAULT NULL,
+  `catalog_properties` int(11) DEFAULT NULL,
+  `value` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `catalog_tovar` (`catalog_tovar`),
+  KEY `catalog_properties_list` (`catalog_properties_list`),
+  KEY `catalog_properties` (`catalog_properties`),
+  KEY `value` (`value`(255)),
+  CONSTRAINT `catalog_tovar_propertiesa_fk11` FOREIGN KEY (`catalog_tovar`) REFERENCES `catalog_tovar` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `catalog_tovar_propertiesa_fk12` FOREIGN KEY (`catalog_properties_list`) REFERENCES `catalog_properties_list` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `catalog_tovar_propertiesa_fk3` FOREIGN KEY (`catalog_properties`) REFERENCES `catalog_properties` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='параметры товара - массив';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 
 --
 -- Table structure for table `catalog_tovar_sku_properties`

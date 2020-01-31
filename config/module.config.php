@@ -128,9 +128,11 @@ return [
     'view_helpers' => [
         'factories' => [
             View\Helper\MenuCategory::class => Navigation\View\Helper\Factory\HelperFactory::class,
+            View\Helper\FilterTovar::class => View\Helper\Factory\FilterTovar::class,
         ],
         'aliases' => [
-            'MenuCategory' =>View\Helper\MenuCategory::class
+            'MenuCategory' =>View\Helper\MenuCategory::class,
+            "FilterTovar" => View\Helper\FilterTovar::class
         ],
     ],
 

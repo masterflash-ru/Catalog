@@ -50,7 +50,9 @@ if ($this->pagination->count()>0) {
 } else {
    // $this->headMeta()->appendName('robots', "noindex" );
 }
+echo $this->FilterTovar($this->node->getId());
 ?>
+<br><br>
 <div class="card-group">
 <?php 
 foreach ($items as $item){

@@ -104,7 +104,8 @@ class Import
                     (select id from catalog_tovar where xml_id=import_1c_tovar_properties.1c_tovar_id1c  and xml_id>''),
                     (select id from catalog_properties_list where xml_id=import_1c_tovar_properties.property_list_id and xml_id>''),
                     (select id from catalog_properties where xml_id=import_1c_tovar_properties.property_id  and xml_id>''),
-                    concat('s:',length(value),':\"',value,'\";')
+                    /*concat('s:',length(value),':\"',value,'\";')*/
+                    value
                         from import_1c_tovar_properties
                             where property_list_id not in(select xml_id from catalog_properties where xml_id>'')
                     ",$a,adExecuteNoRecords);

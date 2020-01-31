@@ -88,7 +88,6 @@ return [
                     ColModelHelper::select("type",
                                            [
                                                "label"=>"Тип поля в админке",
-                                               "width"=>200,
                                                "editoptions"=>[
                                                    "value"=>[
                                                        "text"=>"Однострочный ввод",
@@ -101,10 +100,11 @@ return [
                                            ]),
                     ColModelHelper::select("widget",
                                            [
-                                               "label"=>"Тип поля в фильтре",
-                                               "width"=>200,
+                                               "label"=>"Поле в фильтре сайта",
+                                               "width"=>170,
                                                "editoptions"=>[
                                                    "value"=>[
+                                                       ""=>"Нет в фильтре",
                                                        "MultiCheckbox"=>"Массив чекбоксов",
                                                        "Radio"=>"Массив радиокнопок",
                                                        "select"=>"Выпадающий список",
@@ -126,7 +126,7 @@ return [
                                                             "title"=>"Списик вариантов",
                                                             "resizable"=>true,
                                                             "closeOnEscape"=>true,
-                                                            "width"=>"680",
+                                                            "width"=>"690",
                                                             "position"=>[
                                                                 "my"=>"left top",
                                                                 "at"=>"left top",
@@ -140,7 +140,16 @@ return [
                                          ]),
 
 
-                    ColModelHelper::text("xml_id",["label"=>"XML_ID","width"=>180,"editoptions" => ["size"=>50 ]]),
+                    ColModelHelper::text("xml_id",
+                                         [
+                                             "label"=>"XML_ID",
+                                             "width"=>80,
+                                             "hidden" => true,
+                                             "editrules"=>[
+                                                 "edithidden"=>true,
+                                             ],
+                                             "editoptions" => ["size"=>50 ]
+                                         ]),
                     
                     ColModelHelper::cellActions(),
                 ],
