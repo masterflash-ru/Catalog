@@ -114,6 +114,7 @@ return [
         'factories' => [//сервисы-фабрики
             Service\Import::class => Service\Factory\Import::class,
             Service\Catalog::class => Service\Factory\Catalog::class,
+            Service\Filter::class => Service\Factory\Filter::class,
         ],
     ],
 
