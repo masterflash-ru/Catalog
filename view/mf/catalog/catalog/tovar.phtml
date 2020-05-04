@@ -44,7 +44,7 @@ foreach ($this->parameters as $p){
 ?>
 <tr>
     <td><?=$p->getproperties_name()?></td>
-    <td><?=unserialize($p->getvalue())?></td>
+    <td><?=$p->getvalue()?></td>
     </tr>
 <?php
 }

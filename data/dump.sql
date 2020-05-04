@@ -406,6 +406,7 @@ CREATE TABLE `catalog_tovar_currency` (
   `vat_value` decimal(11,2) DEFAULT NULL COMMENT 'значение НДС',
   PRIMARY KEY (`id`),
   KEY `catalog_currency` (`catalog_currency`),
+    KEY `value` (`value`),
   KEY `catalog_tovar` (`catalog_tovar`),
   KEY `catalog_tovar_properties` (`catalog_tovar_sku_properties`),
   KEY `catalog_price_type` (`catalog_price_type`),

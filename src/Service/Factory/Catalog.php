@@ -12,7 +12,6 @@ class Catalog
     {
         $connection=$container->get('DefaultSystemDb');
         $cache=$container->get('DefaultSystemCache');
-        
         return new $requestedName($connection,$cache);
     }
 }

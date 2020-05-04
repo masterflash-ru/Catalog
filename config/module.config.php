@@ -1,6 +1,8 @@
 <?php
 namespace Mf\Catalog;
 
+use Laminas\ServiceManager\Factory\InvokableFactory;
+
 use Laminas\Router\Http\Literal;
 use Laminas\Router\Http\Segment;
 
@@ -126,14 +128,19 @@ return [
             Controller\CatalogController::class => Controller\Factory\CatalogControllerFactory::class,
         ],
 	],
+
     'view_helpers' => [
         'factories' => [
             View\Helper\MenuCategory::class => Navigation\View\Helper\Factory\HelperFactory::class,
             View\Helper\FilterTovar::class => View\Helper\Factory\FilterTovar::class,
+            Form\View\Helper\MoneyRange::class => InvokableFactory::class,
+            View\Helper\FilterFormRow::class => InvokableFactory::class,
         ],
         'aliases' => [
             'MenuCategory' =>View\Helper\MenuCategory::class,
-            "FilterTovar" => View\Helper\FilterTovar::class
+            "FilterTovar" => View\Helper\FilterTovar::class,
+            "MoneyRange" => Form\View\Helper\MoneyRange::class,
+            "FilterFormRow"=>View\Helper\FilterFormRow::class,
         ],
     ],
 
@@ -153,6 +160,7 @@ return [
             ],
         ],
     ],
+
     /*доступ к панели управления*/
     "permission"=>[
         "objects" =>[

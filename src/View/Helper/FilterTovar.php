@@ -53,15 +53,28 @@ public function __invoke(int $catalog_node_id)
      $el=new Element\Submit("dofilter");
     $el->setValue("Применить фильтр");
     $form->add($el);
-    $html="";
+    
     $form->setAttribute('method', 'get');
     $form->prepare();
-    $view=$this->getView();
-    $html.=$view->form($form);
+    $renderer=$this->getView();
     
+    //добавим саму форму (теги)
+    $formhelper=$renderer->form();
+    $html=$formhelper->openTag($form);
+    //помощник вывода всех элементов формы
+    $formElement=$renderer->formElement();
     
+    //добавим наш элемент вывода элмента
+    $formElement->addType("MoneyRange","MoneyRange");
+    $formElement->addClass(\Mf\Catalog\Form\View\Helper\MoneyRange::class,"MoneyRange");
+
+    //рендер формы при помощи модифицированного formRow помощника
+    foreach ($form as $element) {
+        $html.=$renderer->FilterFormRow($element);
+    }
+    $html.=$formhelper->closeTag();
     
-    return $catalog_node_id."FILTER".$html;
+    return "NODE_ID:".$catalog_node_id." FILTER".$html;
 }
 
 }
