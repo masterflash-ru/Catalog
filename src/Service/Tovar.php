@@ -105,7 +105,7 @@ class Tovar
                             /*другие фильтры*/
                             ".implode("\n",$command_sql[1])."
                             order by t.name
-                            ";\Admin\Debug::dump($command->CommandText);
+                            ";//\Admin\Debug::dump($command->CommandText);
             $rs=new RecordSet();
             $rs->CursorType =adOpenKeyset;
             $rs->Open($command);
