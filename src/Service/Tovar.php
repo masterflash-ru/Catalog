@@ -1,19 +1,19 @@
 <?php
 /*
-модуль работы с каталогом
+модуль работы с товаром из каталога (список, карточка )
 
 */
 namespace Mf\Catalog\Service;
 use ADO\Service\RecordSet;
 use ADO\Service\Command;
-use Mf\Catalog\Entity\Catalog as CatalogNode;
-use Mf\Catalog\Entity\Tovar;
+
+
 use Mf\Catalog\Entity\Properties;
 use Laminas\Paginator\Adapter;
 use Laminas\Paginator\Paginator;
 
     
-class Catalog
+class Tovar
 {
     /*соединение с базой*/
 	protected $connection;
@@ -26,120 +26,91 @@ class Catalog
     
     /**экземпляр Price*/
     protected $price;
+    
+    /***/
 
 
-    public function __construct($connection,$cache,$price)
+    /**
+    * $connection - соединение с базой,
+    * $cache - объект кеширования,
+    * $filter - экзепляр работы с фильтром товара,
+    * $price - экзепляр работы с ценами товара
+    */
+    public function __construct($connection,$cache,$filter,$price)
     {
         $this->connection=$connection;
         $this->cache=$cache;
         $this->price=$price;
+        $this->filter=$filter;
     }
 
-
-
-    /*список подуровней в выбранном узле
-    $id - ID текущего узла
-    */
-    public function GetNodeList($id=0)
-    {
-        //создаем ключ кеша
-        $key="catalog_item_{$id}";
-        //пытаемся считать из кеша
-        $result = false;
-        $nodes= $this->cache->getItem($key, $result);
-        if (!$result || true){
-            //промах кеша, создаем
-            $c=new Command();
-            $c->NamedParameters=true;
-            $c->ActiveConnection=$this->connection;
-            $p=$c->CreateParameter('id', adInteger, adParamInput, 127, $id);//генерируем объек параметров
-            $c->Parameters->Append($p);//добавим в коллекцию
-            $c->CommandText="select * from catalog_category where subid=:id and public>0";
-            $rs=new RecordSet();
-            $rs->CursorType =adOpenKeyset;
-            $rs->Open($c);
-            $nodes=$rs->FetchEntityAll(CatalogNode::class);
-
-            //сохраним в кеш
-            $this->cache->setItem($key, $nodes);
-            $this->cache->setTags($key,["catalog_category"]);
-        }
-        return $nodes;
-
-    }
-
-
-    /*
-    получить инфу по узлу
-    */
-    public function getNodeInfo($url)
-    {
-        //создаем ключ кеша
-        $key="catalog_".preg_replace('/[^0-9a-zA-Z_\-]/iu', '',$url);
-        //пытаемся считать из кеша
-        $result = false;
-        $node= $this->cache->getItem($key, $result);
-        if (!$result || true){
-            //промах кеша, создаем
-            $c=new Command();
-            $c->NamedParameters=true;
-            $c->ActiveConnection=$this->connection;
-            $p=$c->CreateParameter('url', adChar, adParamInput, 127, $url);//генерируем объек параметров
-            $c->Parameters->Append($p);//добавим в коллекцию
-            $c->CommandText="select * from catalog_category where url=:url and public>0";
-            $rs=new RecordSet();
-            $rs->CursorType =adOpenKeyset;
-            $rs->Open($c);
-            if ($rs->EOF) {throw new  \Exception("Запись в не найдена");}
-            $node=$rs->FetchEntity(CatalogNode::class);
-
-            //сохраним в кеш
-            $this->cache->setItem($key, $node);
-            $this->cache->setTags($key,["catalog_category"]);
-        }
-        return $node;
-    }
 
 
     /**
     * список товара
-    * $url - URL категории товара
+    * $catalog_category_id - ID категории товара
     * 
     * 
     * возвращает Paginator списка товара (НЕ кешируется!)
     */
-    public function GetTovarList($url)
+    public function GetTovarList($catalog_category_id)
     {
         //создаем ключ кеша
-        $key="tovar_list_".preg_replace('/[^0-9a-zA-Z_\-]/iu', '',$url);
+        $key="tovar_list_{$catalog_category_id}";
         //пытаемся считать из кеша
         $result = false;
         $tovars= $this->cache->getItem($key, $result);
         if (!$result || true){
             //промах кеша, создаем
-            $c=new Command();
-            $c->NamedParameters=true;
-            $c->ActiveConnection=$this->connection;
-            $p=$c->CreateParameter('url', adChar, adParamInput, 127, $url);//генерируем объек параметров
-            $c->Parameters->Append($p);//добавим в коллекцию
-            $c->CommandText="select t.*,
+            //$c=new Command();
+            //$c->NamedParameters=true;
+            //$c->ActiveConnection=$this->connection;
+            
+            
+            $command_sql=$this->filter->getADOCommandFromFilter($catalog_category_id);
+            $command=$command_sql[0];
+            
+            //узел каталога
+            $p=$command->CreateParameter('catalog_category', adInteger, adParamInput, 127, $catalog_category_id);
+            $command->Parameters->Append($p);//добавим в коллекцию
+            
+            //имя валюты
+            $p=$command->CreateParameter('currency_name', adChar, adParamInput, 127, $this->price->getCurrencyName());
+            $command->Parameters->Append($p);//добавим в коллекцию
+            
+            //ID прайса
+            $p=$command->CreateParameter('price_type', adInteger, adParamInput, 127, $this->price->getCheckPrice());
+            $command->Parameters->Append($p);//добавим в коллекцию
+
+            
+            $command->CommandText="select 
+            t.*,
+            tcur.value as tovar_currency,
+            tcur.catalog_currency currency_name,
+            tcur.catalog_price_type price_type_id,
                 (select value from 
                             catalog_tovar_properties 
                                 where catalog_properties in(select id from catalog_properties where sysname='PARENT_SKU') and catalog_tovar=t.id) psku
-                     from catalog_tovar t,catalog_category2tovar c2t,catalog_category c
+                     from catalog_tovar t,catalog_category2tovar c2t,catalog_category c, catalog_tovar_currency tcur
                         where 
                             t.id=c2t.catalog_tovar and 
                             c2t.catalog_category=c.id and
-                            c.url=:url  and 
+                            c2t.catalog_category=:catalog_category  and 
                             c.public>0 and
-                            t.public>0
+                            t.public>0 and
+                            /*что касается прайсов*/
+                                tcur.catalog_tovar=t.id and 
+                                tcur.catalog_currency=:currency_name and 
+                                tcur.catalog_price_type=:price_type
+                            /*другие фильтры*/
+                            ".implode("\n",$command_sql[1])."
                             order by t.name
-                            ";
+                            ";\Admin\Debug::dump($command->CommandText);
             $rs=new RecordSet();
             $rs->CursorType =adOpenKeyset;
-            $rs->Open($c);
+            $rs->Open($command);
             //if ($rs->EOF) {throw new  \Exception("Запись в не найдена");}
-            $items=$rs->FetchEntityAll(Tovar::class);
+            $items=$rs->FetchEntityAll();
             $tovars = new Paginator(new Adapter\ArrayAdapter($items));
 
             //сохраним в кеш
@@ -151,7 +122,10 @@ class Catalog
     }
 
 
-    /*подробно товар*/
+    /**подробно товар
+    * $category - строка URL узла категории товара
+    * $url - строка URL товара 
+    */
     public function GetTovarInfo($category,$url)
     {
         $key="tovar_".preg_replace('/[^0-9a-zA-Z_\-]/iu', '',$category).preg_replace('/[^0-9a-zA-Z_\-]/iu', '',$url);;
@@ -179,7 +153,7 @@ class Catalog
             $rs->CursorType = adOpenKeyset;
             $rs->Open($c);
             if ($rs->EOF) {throw new  \Exception("Товар не найден!");}
-            $rez=$rs->FetchEntity(Tovar::class);
+            $rez=$rs->FetchEntity();
             //сохраним в кеш
             $this->cache->setItem($key, $rez);
             $this->cache->setTags($key,["catalog_category","catalog_tovar"]);

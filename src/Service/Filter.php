@@ -20,23 +20,62 @@ use Mf\Catalog\Form\Element\MoneyRange;
     
 class Filter
 {
-	public $connection;
-	public $cache;
+	protected $connection;
+	protected $cache;
+    
+    /**экземпляр Price*/
+    protected $price;
     /*флаг применения фильтра*/
     protected $do_filter=false;
     
     /**кешированая форма*/
     protected $forma;
+    
+    /*справочник из таблицы catalog_properties,
+    * ключ массива ID параметра
+    */
+    protected $catalog_properties;
 
 
-    public function __construct($connection,$cache)
+    public function __construct($connection,$cache,$price)
     {
         $this->connection=$connection;
         $this->cache=$cache;
+        $this->price=$price;
+        $this->init();
     }
 
 
-    
+    /**
+    * инициализация параметров
+    * загружаем из таблиц все что имеется и кешируем
+    */
+    protected function init()
+    {
+        $key="catalog_properties_def";
+        //пытаемся считать из кеша
+        $result = false;
+        $rez= $this->cache->getItem($key, $result);
+        if (!$result || true) {
+            //варианты валюты каталога
+            $rs=$this->connection->Execute("select * from catalog_properties where public>0");
+            while (!$rs->EOF){
+                $rez[$rs->Fields->Item["id"]->Value]=[
+                    "name"=>$rs->Fields->Item["name"]->Value,
+                    "type"=>$rs->Fields->Item["type"]->Value,
+                    "sysname"=>$rs->Fields->Item["sysname"]->Value,
+                    "widget"=>$rs->Fields->Item["widget"]->Value,
+                    ];
+                $rs->MoveNext();
+            }
+
+            //сохраним в кеш
+            $this->cache->setItem($key, $rez);
+            $this->cache->setTags($key,["catalog_currency","catalog_price_type","catalog_properties"]);
+        }
+        $this->catalog_properties=$rez;
+    }
+
     
     /**
     * фильтр был применен?
@@ -47,7 +86,67 @@ class Filter
         return $this->do_filter;
     }
     
-    
+    /**
+    * Получить заполненный ADO\Service\Command с наполненной коллекцией параметров для выборки списка товара
+    * коллекция формируется исходя из данных формы, если конечно применялся фильтр
+    *
+    * $catalog_category_id - ID категории товара каталога для которого делаем выборку
+    */
+    public function getADOCommandFromFilter($catalog_category_id)
+    {
+        $command=new Command();
+        $command->NamedParameters=true;
+        $command->ActiveConnection=$this->connection;
+        
+        //формируем форму фильтра и заполняем ее если есть чем, там же проверка на валидность
+        $forma=$this->createForm($catalog_category_id);
+        //фильтр применен?
+        $sql=[];
+        if ($this->isFiltered()){
+            //да, формируем Command
+            foreach ($forma as $k=>$el){
+                $_v=$el->getValue();
+                //ID из таблицы catalog_properties (ID параметра)
+                $id=explode("_",$k);
+                $id=$id[1];
+                $properties=$this->catalog_properties[$id]; //вся ифнормация о параметре из справочника
+                //в зависимости от типа параметра формируем параметры в ADO
+                if (strtoupper($properties["sysname"])=="MONEYRANGE") {
+                    //диапазон цен
+                    $dprice=explode(",",$_v);
+                    $p=$command->CreateParameter($k."s", adDouble, adParamInput, 127, $dprice[0]);
+                    $command->Parameters->Append($p);
+                    $p1=$command->CreateParameter($k."e", adDouble, adParamInput, 127, $dprice[1]);
+                    $command->Parameters->Append($p1);
+                    $sql[]="and tcur.value < :".$p1->Name." and tcur.value > :".$p->Name;
+                } else {
+                    if (empty($_v)){
+                        //пропускаем пустые значения (т.е. не выбранные фильтры)
+                        continue;
+                    }
+                    $p=$command->CreateParameter("id".$k, adInteger, adParamInput, 127, $id);//генерируем объек параметров
+                    $command->Parameters->Append($p);
+                    $s=[];//накапливаем псевдопеременные в строку запроса
+                    if (is_array($_v)){
+                        foreach ($_v as $index=>$el_value_item){
+                            $p1=$command->CreateParameter($k.$index, adChar, adParamInput, 127, $el_value_item);//генерируем объек параметров
+                            $command->Parameters->Append($p1);
+                            $s[]=":".$k.$index;
+                        }
+                    } else {
+                        $p1=$command->CreateParameter($k, adChar, adParamInput, 127, $_v);//генерируем объек параметров
+                        $command->Parameters->Append($p1);
+                        $s=[":".$k];
+                    }
+                    $s=implode(",",$s);
+                    $sql[]=" and t.id in(select catalog_tovar 
+                                            from catalog_tovar_properties 
+                                                where catalog_properties=:".$p->Name." and value in({$s}))";
+                }
+            }
+        }
+        return [$command,$sql];
+    }
     
     
     /**
@@ -68,22 +167,13 @@ class Filter
     /**
     * создать форму фильтра пригодную для вывода и работы с данными
     * $catalog_node_id - ID узла каталога
-    * возвращает экземпляр Laminas\Form\Form
+    * возвращает экземпляр Laminas\Form\Form с заполненными данными
     * если данные формы не валидны (например, подмена), исключение, 
     */
     protected function _createForm(int $catalog_node_id)
     {
         $form = new Form('filter');
         
-        /** первый контроли это выбор цены - ползунки* /
-        $form->add(array(
-            'name' => 'price',
-            'type' => MoneyRange::class,
-            'options' => [
-                'label' => 'Цена',
-            ],
-        ));
-
         /*получить массив общих параметров которые имеются для данной категории товара*/
         $properties=$this->getCatalogProperties($catalog_node_id);
 
@@ -120,10 +210,9 @@ class Filter
                 case "moneyrange":{
                     $el=new MoneyRange("f_".$pr->getId());
                     //получим из диапазона товара мин и макс цену
-                    $price=$this->getMinMaxPrice($catalog_node_id,0,"RUB");
+                    $price=$this->price->getMinMaxPrice($catalog_node_id);
                     $el->setMin($price->getPrice_min());
                     $el->setMax($price->getPrice_max());
-                    
                     break;
                 }
             }
@@ -210,30 +299,5 @@ class Filter
         return $properties_v;
     }
 
-    /**
-    * получить мин и макс значения цен для указанного узла каталога
-    * $catalog_node_id - ID узла каталога
-    * $catalog_price_type_id - ID типа прайса, если 0, тогда берется прайс по умолчанию
-    * $currency - тип валюты
-    */
-    public function getMinMaxPrice(int $catalog_node_id, int $catalog_price_type_id=0, string $currency="RUB")
-    {
-        $rs=$this->connection->Execute("
-        select 
-            min(ctc.value) as price_min,
-            max(ctc.value) as price_max
-             from catalog_category2tovar c2t
-              left join catalog_tovar_currency ctc
-               on ctc.catalog_tovar=c2t.catalog_tovar
-               where 
-                c2t.catalog_category={$catalog_node_id} and
-                ctc.catalog_currency='{$currency}' and 
-                ctc.value >0 and
-                ((ctc.catalog_price_type={$catalog_price_type_id} and 0!={$catalog_price_type_id}) or 
-                    (ctc.catalog_price_type in(select id from catalog_price_type where is_base>0 ) and 0={$catalog_price_type_id})
-                )");
-        $properties=$rs->fetchEntity();
-        return $properties;
-    }
 
 }

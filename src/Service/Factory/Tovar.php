@@ -7,7 +7,7 @@ use Interop\Container\ContainerInterface;
 use  Mf\Catalog\Service\Filter;
 use  Mf\Catalog\Service\Price;
 
-class Catalog
+class Tovar
 {
     public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
     {

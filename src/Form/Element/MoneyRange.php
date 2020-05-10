@@ -5,7 +5,8 @@ namespace Mf\Catalog\Form\Element;
 use Laminas\Filter;
 use Laminas\Form\Element;
 use Laminas\InputFilter\InputProviderInterface;
-
+use Laminas\Validator\Regex as RegexValidator;
+use Laminas\Validator\ValidatorInterface;
 
 class MoneyRange extends Element implements InputProviderInterface
 {
@@ -19,7 +20,26 @@ class MoneyRange extends Element implements InputProviderInterface
     /**максимальное*/
     protected $maxv=0;
     
+    protected $validator;
     
+    public function getValidator()
+    {
+        if (null === $this->validator) {
+            $validator = new RegexValidator('/^\d+,\d+$/');
+            $validator->setMessage(
+                'Не верный тип данных, должно быть: число,число',
+                RegexValidator::NOT_MATCH
+            );
+            $this->validator = $validator;
+        }
+        return $this->validator;
+    }
+    
+    public function setValidator(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+        return $this;
+    }
     
     /**
     * установить минимум для диапазона
@@ -65,6 +85,9 @@ class MoneyRange extends Element implements InputProviderInterface
             'required' => false,
             'filters' => [
                 ['name' => Filter\StringTrim::class],
+            ],
+            'validators' => [
+                $this->getValidator(),
             ],
         ];
     }

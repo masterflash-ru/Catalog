@@ -117,6 +117,8 @@ return [
             Service\Import::class => Service\Factory\Import::class,
             Service\Catalog::class => Service\Factory\Catalog::class,
             Service\Filter::class => Service\Factory\Filter::class,
+            Service\Price::class => Service\Factory\Price::class,
+            Service\Tovar::class => Service\Factory\Tovar::class,
         ],
     ],
 
@@ -135,12 +137,14 @@ return [
             View\Helper\FilterTovar::class => View\Helper\Factory\FilterTovar::class,
             Form\View\Helper\MoneyRange::class => InvokableFactory::class,
             View\Helper\FilterFormRow::class => InvokableFactory::class,
+            View\Helper\TovarCurrency::class => View\Helper\Factory\TovarCurrency::class,
         ],
         'aliases' => [
             'MenuCategory' =>View\Helper\MenuCategory::class,
             "FilterTovar" => View\Helper\FilterTovar::class,
             "MoneyRange" => Form\View\Helper\MoneyRange::class,
             "FilterFormRow"=>View\Helper\FilterFormRow::class,
+            "TovarCurrency"=>View\Helper\TovarCurrency::class,
         ],
     ],
 

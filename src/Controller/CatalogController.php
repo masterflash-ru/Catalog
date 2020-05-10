@@ -15,12 +15,14 @@ class CatalogController extends AbstractActionController
 {
     protected $cache;
     protected $catalog;
+    protected $tovar;
     
     
-    public function __construct($catalog,$cache)
+    public function __construct($catalog,$tovar,$cache)
     {
         $this->catalog=$catalog;
         $this->cache=$cache;
+        $this->tovar=$tovar;
     }
     public function indexAction()
     {
@@ -45,7 +47,7 @@ class CatalogController extends AbstractActionController
 
             $node=$this->catalog->getNodeInfo($url);
             $nodes=$this->catalog->GetNodeList($node->getId());
-            $pagination=$this->catalog->GetTovarList($url);
+            $pagination=$this->tovar->GetTovarList($node->getId());
             /*настроим пагинатор*/
             $pagination->setItemCountPerPage (51);
             $pagination->setPageRange (18);

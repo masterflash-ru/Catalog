@@ -4,7 +4,7 @@ namespace Mf\Catalog\Service\Factory;
 
 use Interop\Container\ContainerInterface;
 
-
+use  Mf\Catalog\Service\Price;
 
 class Filter
 {
@@ -12,7 +12,7 @@ class Filter
     {
         $connection=$container->get('DefaultSystemDb');
         $cache=$container->get('DefaultSystemCache');
-        
-        return new $requestedName($connection,$cache);
+        $price=$container->get(Price::class);
+        return new $requestedName($connection,$cache,$price);
     }
 }
