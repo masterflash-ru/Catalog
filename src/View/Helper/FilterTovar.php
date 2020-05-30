@@ -15,6 +15,8 @@ use Laminas\Form\Form;
 use Laminas\InputFilter\InputFilter;
 use Laminas\InputFilter\Input;
 
+use Mf\Catalog\Form\View\Helper\MoneyRange;
+
 /**
  * помощник - вывода фильтра товара
  */
@@ -47,9 +49,10 @@ public function __invoke(int $catalog_node_id)
     
 
     if ($this->filter->isFiltered()){
-        \Admin\Debug::dump($form->getData());
+        //\Admin\Debug::dump($form->getData());
     }
     
+    //добавим кнопку применения фильтра
      $el=new Element\Submit("dofilter");
     $el->setValue("Применить фильтр");
     $form->add($el);
@@ -64,9 +67,9 @@ public function __invoke(int $catalog_node_id)
     //помощник вывода всех элементов формы
     $formElement=$renderer->formElement();
     
-    //добавим наш элемент вывода элмента
+    //добавим наш элемент (диапазон цен) вывода элмента
     $formElement->addType("MoneyRange","MoneyRange");
-    $formElement->addClass(\Mf\Catalog\Form\View\Helper\MoneyRange::class,"MoneyRange");
+    $formElement->addClass(MoneyRange::class,"MoneyRange");
 
     //рендер формы при помощи модифицированного formRow помощника
     foreach ($form as $element) {
@@ -74,7 +77,7 @@ public function __invoke(int $catalog_node_id)
     }
     $html.=$formhelper->closeTag();
     
-    return "NODE_ID:".$catalog_node_id." FILTER".$html;
+    return "<div class=\"filter-tovar\">".$html."</div>";
 }
 
 }

@@ -1,17 +1,28 @@
+<div class="row">
+ <div class="col-lg-3 left-sidebar pb-4 pl-0 pr-0 order-2 order-lg-1">
+   <!--левая колонка-->
+    <div class="menu_catalog mt-1">
+    <?=$this->FilterTovar($this->node->getId())?>
+    </div>
+</div>
+<div class="col-lg-9 order-1 order-lg-2">
+    <!--правая-->
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="/Главная">Главная</a></li>
-    <li class="breadcrumb-item"><a href="/catalog">Каталог</a></li>
+    <li class="breadcrumb-item"><a href="/">Главная</a></li>
+    <li class="breadcrumb-item"><a href="<?=$this->url("catalog")?>">Каталог</a></li>
     <?php
       for($i=count($this->breadcrumb["name"])-1;$i>0;$i--) {;
           ?>
-    <li class="breadcrumb-item"><a href="/catalog/<?=$this->breadcrumb["url"][$i]?>"><?=$this->breadcrumb["name"][$i]?></a></li>
+    <li class="breadcrumb-item"><a href="<?=$this->url("catalog").$this->breadcrumb["url"][$i]?>"><?=$this->breadcrumb["name"][$i]?></a></li>
         <?php
       }
     ?>
     <li class="breadcrumb-item active" aria-current="page"><?=$this->node->getname(); ?></li>
   </ol>
 </nav>
+
+
 <h1><?=$this->node->getname(); ?></h1>
 <?=$this->node->getinfo();?>
 
@@ -50,7 +61,7 @@ if ($this->pagination->count()>0) {
 } else {
    // $this->headMeta()->appendName('robots', "noindex" );
 }
-echo $this->FilterTovar($this->node->getId());
+
 ?>
 <br><br>
 <div class="card-group">
@@ -97,4 +108,6 @@ echo $this->Pagination($this->pagination,[
 
 ?>
 
+    </div>
+    </div>
 

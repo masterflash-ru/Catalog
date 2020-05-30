@@ -118,7 +118,7 @@ class Filter
                     $command->Parameters->Append($p);
                     $p1=$command->CreateParameter($k."e", adDouble, adParamInput, 127, $dprice[1]);
                     $command->Parameters->Append($p1);
-                    $sql[]="and tcur.value < :".$p1->Name." and tcur.value > :".$p->Name;
+                    $sql[]="and tcur.value <= :".$p1->Name." and tcur.value >= :".$p->Name;
                 } else {
                     if (empty($_v)){
                         //пропускаем пустые значения (т.е. не выбранные фильтры)
